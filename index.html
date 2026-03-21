@@ -1505,16 +1505,15 @@ Livrezon: Otomatik via WhatsApp apre peman konfime.
 
 Reponn an Kreyòl Ayisyen. Sois konsis, chalè, pwofesyonèl. Itilize emoji apwopriye.`;
 
-  const response = await fetch( {https://chatbot-api.pierreancyto5.workers.dev,
-    method:"POST",
-    headers:{headers:{"Content-Type":"application/json"},
-body: JSON.stringify({
-  message: msg,
-  site: "peyem"
-})
+  const response = await fetch("https://chatbot-api.pierreancyto5.workers.dev", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({message: msg, site: "peyem"})
   });
   const data = await response.json();
-return data.reply || "Désolé, 
+  return data.reply || "Désolé, yon erè. Tanpri eseye ankò.";
+}
+
 async function handleQuick(text) {
   addUserMsg(text); showTyping();
   try {
