@@ -1505,20 +1505,16 @@ Livrezon: Otomatik via WhatsApp apre peman konfime.
 
 Reponn an Kreyòl Ayisyen. Sois konsis, chalè, pwofesyonèl. Itilize emoji apwopriye.`;
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch( {https://chatbot-api.pierreancyto5.workers.dev,
     method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      model:"claude-sonnet-4-20250514",
-      max_tokens:1000,
-      system: sys,
-      messages:[{role:"user",content:msg}]
-    })
+    headers:{headers:{"Content-Type":"application/json"},
+body: JSON.stringify({
+  message: msg,
+  site: "peyem"
+})
   });
   const data = await response.json();
-  return data.content?.[0]?.text || "Désolé, yon erè. Tanpri eseye ankò.";
-}
-
+return data.reply || "Désolé, 
 async function handleQuick(text) {
   addUserMsg(text); showTyping();
   try {
