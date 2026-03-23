@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PEYEM – Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#050b18;--surface:#0d1a2e;--surface2:#112240;--blue:#0a84ff;--cyan:#00d4ff;--accent:#64ffda;--text:#e8f1ff;--muted:#7a93b5;--border:rgba(10,132,255,0.18);--blue-grad:linear-gradient(135deg,#0a84ff,#2563eb);--glow:0 0 40px rgba(10,132,255,0.25)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(10,132,255,.1) 0%,transparent 60%);pointer-events:none;z-index:0}
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;position:relative;z-index:1}
+.login-box{width:100%;max-width:360px;background:rgba(13,26,46,.9);border:1px solid var(--border);border-radius:20px;padding:28px 24px;backdrop-filter:blur(16px)}
+.login-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:.12em;background:linear-gradient(90deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:4px}
+.login-sub{text-align:center;font-size:.72rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:24px}
+header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(5,11,24,.9);backdrop-filter:blur(12px)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:.12em;background:linear-gradient(90deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.admin-badge{background:rgba(255,200,0,.12);border:1px solid rgba(255,200,0,.25);color:#ffd700;padding:4px 10px;border-radius:8px;font-size:.65rem;font-weight:700;letter-spacing:.08em}
+.logout-btn{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;padding:6px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer}
+main{position:relative;z-index:5;max-width:520px;margin:0 auto;padding:20px 16px 80px}
+.section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.form-card{background:rgba(13,26,46,.8);border:1px solid var(--border);border-radius:18px;padding:22px;backdrop-filter:blur(12px);margin-bottom:20px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.68rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.field input{width:100%;background:rgba(10,132,255,.06);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:all .2s}
+.field input:focus{border-color:var(--blue);background:rgba(10,132,255,.1);box-shadow:0 0 0 3px rgba(10,132,255,.1)}
+.field input::placeholder{color:rgba(122,147,181,.4)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{width:100%;padding:14px;background:var(--blue-grad);border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .25s;box-shadow:0 6px 24px rgba(10,132,255,.3);margin-top:4px}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.result-box{display:none;background:rgba(100,255,218,.07);border:1px solid rgba(100,255,218,.2);border-radius:14px;padding:18px;margin-top:14px}
+.result-box.show{display:block}
+.result-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--accent);margin-bottom:12px}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.result-row:last-child{border:none}
+.result-label{color:var(--muted);font-size:.78rem}
+.result-val{font-weight:600;font-size:.82rem;font-family:'Syne',sans-serif}
+.result-val.pw{color:#ffd700;letter-spacing:.1em;font-size:1rem}
+.copy-btn{background:rgba(10,132,255,.12);border:1px solid var(--border);color:var(--blue);padding:4px 10px;border-radius:6px;font-size:.7rem;cursor:pointer}
+.clients-list{display:flex;flex-direction:column;gap:10px}
+.client-card{background:rgba(13,26,46,.8);border:1px solid var(--border);border-radius:14px;padding:16px;transition:all .2s}
+.client-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.client-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem}
+.client-phone{color:var(--muted);font-size:.78rem;margin-top:2px}
+.client-badge{font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:8px;border:1px solid rgba(100,255,218,.2);background:rgba(100,255,218,.08);color:var(--accent)}
+.client-badge.expired{border-color:rgba(255,80,80,.2);background:rgba(255,80,80,.08);color:#ff6b6b}
+.client-info{font-size:.75rem;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+.client-actions{display:flex;gap:8px;margin-top:10px}
+.btn-sm{padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:rgba(10,132,255,.07);color:var(--text);font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-sm.red{border-color:rgba(255,80,80,.2);color:#ff6b6b}
+.empty{text-align:center;padding:32px;color:var(--muted);font-size:.85rem}
+.empty .icon{font-size:2rem;margin-bottom:8px;display:block}
+.tabs{display:flex;gap:6px;margin-bottom:20px;background:rgba(13,26,46,.6);border-radius:12px;padding:4px}
+.tab{flex:1;padding:10px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.tab.active{background:var(--blue-grad);color:#fff}
+.login-field{margin-bottom:14px}
+.login-field label{display:block;font-size:.7rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:7px}
+.login-field input{width:100%;background:rgba(10,132,255,.06);border:1px solid var(--border);border-radius:11px;padding:13px 15px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:all .2s}
+.login-field input:focus{border-color:var(--blue)}
+.err{color:#ff6b6b;font-size:.78rem;margin-top:8px;display:none}
+.err.show{display:block}
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-16px);background:rgba(100,255,218,.12);border:1px solid rgba(100,255,218,.28);color:var(--accent);padding:10px 22px;border-radius:28px;font-size:.8rem;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:200;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:rgba(255,80,80,.12);border-color:rgba(255,80,80,.28);color:#ff6b6b}
+.loading{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:rgba(10,132,255,.25);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">PEYEM</div>
+    <div class="login-sub">🔐 Admin Panel</div>
+    <div class="login-field">
+      <label>Modpas Admin</label>
+      <input type="password" id="adminPw" placeholder="Antre modpas admin" onkeydown="if(event.key==='Enter')adminLogin()"/>
+    </div>
+    <div class="err" id="loginErr"></div>
+    <button class="btn" id="loginBtn" onclick="adminLogin()" style="margin-top:14px">Konekte →</button>
+  </div>
+</div><div id="mainApp" style="display:none">
+  <header>
+    <div><div class="logo">PEYEM</div></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="admin-badge">👑 ADMIN</div>
+      <button class="logout-btn" onclick="adminLogout()">Dekonekte</button>
+    </div>
+  </header>
+  <main>
+    <div class="tabs">
+      <button class="tab active" id="tab1" onclick="switchTab(1)">➕ Nouvo Kliyan</button>
+      <button class="tab" id="tab2" onclick="switchTab(2)">👥 Kliyan Yo</button>
+    </div>
+    <div id="tabContent1">
+      <div class="section-title"><div class="dot"></div>Kreye Kont Kliyan</div>
+      <div class="form-card">
+        <div class="field"><label>Non Konplè Kliyan</label><input type="text" id="cName" placeholder="Jean Pierre Dupont"/></div>
+        <div class="field"><label>Nimewo Telefòn</label><input type="tel" id="cPhone" placeholder="50912345678"/></div>
+        <div class="field"><label>Balans USD ($)</label><input type="number" id="cBalance" placeholder="10" min="1"/></div>
+        <div style="margin-bottom:12px;font-size:.72rem;font-weight:700;color:var(--cyan);text-transform:uppercase;padding-top:8px">💳 Enfòmasyon Kat (Fyatu)</div>
+        <div class="field"><label>Nimewo Kat (16 chif)</label><input type="text" id="cCardNum" placeholder="4532 1234 5678 9012" maxlength="19"/></div>
+        <div class="grid2">
+          <div class="field"><label>Expiry (MM/YY)</label><input type="text" id="cExpiry" placeholder="09/28" maxlength="5"/></div>
+          <div class="field"><label>CVV</label><input type="text" id="cCvv" placeholder="234" maxlength="4"/></div>
+        </div>
+        <button class="btn" id="createBtn" onclick="createClient()">✅ Kreye Kont Kliyan</button>
+        <div class="result-box" id="resultBox">
+          <div class="result-title">✅ Voye enfòmasyon sa ba kliyan sou WhatsApp:</div>
+          <div class="result-row"><span class="result-label">Non</span><span class="result-val" id="rName">—</span></div>
+          <div class="result-row"><span class="result-label">Telefòn</span><span class="result-val" id="rPhone">—</span></div>
+          <div class="result-row"><span class="result-label">🔑 Modpas</span><span class="result-val pw" id="rPassword">—</span></div>
+          <button class="copy-btn" style="margin-top:12px;width:100%;padding:10px" onclick="copyWhatsAppMsg()">📲 Kopye Mesaj WhatsApp</button>
+        </div>
+      </div>
+    </div>
+    <div id="tabContent2" style="display:none">
+      <div class="section-title"><div class="dot"></div>Lis Kliyan (<span id="clientCount">0</span>)</div>
+      <div class="clients-list" id="clientsList"><div class="empty"><span class="icon">👥</span>Okenn kliyan</div></div>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const API='https://peyem-api.pierreancyto5.workers.dev';
+const LOGIN_PAGE='https://pierreancyto5-alt.github.io/PeyeM/login.html';
+let adminToken='',lastCreated=null;
+document.getElementById('cCardNum').addEventListener('input',function(){let v=this.value.replace(/\D/g,'').substring(0,16);this.value=v.match(/.{1,4}/g)?.join(' ')||v;});
+document.getElementById('cExpiry').addEventListener('input',function(){let v=this.value.replace(/\D/g,'');if(v.length>2)v=v.substring(0,2)+'/'+v.substring(2,4);this.value=v;});
+async function adminLogin(){
+  const pw=document.getElementById('adminPw').value;
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.innerHTML='<span class="loading"></span>...';
+  try{
+    const res=await fetch(`${API}/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+    const data=await res.json();
+    if(data.success){adminToken=data.token;sessionStorage.setItem('admin_token',adminToken);document.getElementById('loginScreen').style.display='none';document.getElementById('mainApp').style.display='block';loadClients();}
+    else{const e=document.getElementById('loginErr');e.textContent='❌ Modpas pa kòrèk';e.classList.add('show');btn.disabled=false;btn.textContent='Konekte →';}
+  }catch(e){btn.disabled=false;btn.textContent='Konekte →';showToast('❌ Erè koneksyon',1);}
+}
+function adminLogout(){sessionStorage.removeItem('admin_token');adminToken='';document.getElementById('loginScreen').style.display='flex';document.getElementById('mainApp').style.display='none';document.getElementById('adminPw').value='';}
+window.addEventListener('load',()=>{const t=sessionStorage.getItem('admin_token');if(t){adminToken=t;document.getElementById('loginScreen').style.display='none';document.getElementById('mainApp').style.display='block';loadClients();}});
+function switchTab(n){[1,2].forEach(i=>{document.getElementById(`tab${i}`).classList.toggle('active',i===n);document.getElementById(`tabContent${i}`).style.display=i===n?'block':'none';});if(n===2)loadClients();}
+async function createClient(){
+  const name=document.getElementById('cName').value.trim();
+  const phone=document.getElementById('cPhone').value.trim().replace(/\s/g,'');
+  const balance=document.getElementById('cBalance').value.trim();
+  const cardNum=document.getElementById('cCardNum').value.trim();
+  const expiry=document.getElementById('cExpiry').value.trim();
+  const cvv=document.getElementById('cCvv').value.trim();
+  if(!name||!phone||!balance||!cardNum||!expiry||!cvv){showToast('⚠️ Tout chan obligatwa',1);return;}
+  const btn=document.getElementById('createBtn');
+  btn.disabled=true;btn.innerHTML='<span class="loading"></span>Ap kreye...';
+  try{
+    const res=await fetch(`${API}/admin/create-client`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${adminToken}`},body:JSON.stringify({name,phone,cardNumber:cardNum,cardExpiry:expiry,cardCvv:cvv,balanceUSD:parseFloat(balance)})});
+    const data=await res.json();
+    if(data.success){lastCreated={name,phone,password:data.password};document.getElementById('rName').textContent=name;document.getElementById('rPhone').textContent=phone;document.getElementById('rPassword').textContent=data.password;document.getElementById('resultBox').classList.add('show');showToast('✅ Kont kreye!');['cName','cPhone','cBalance','cCardNum','cExpiry','cCvv'].forEach(id=>document.getElementById(id).value='');}
+    else showToast('❌ '+data.error,1);
+  }catch(e){showToast('❌ Erè rezeau',1);}
+  btn.disabled=false;btn.textContent='✅ Kreye Kont Kliyan';
+}
+function copyWhatsAppMsg(){
+  if(!lastCreated)return;
+  const msg=`🎉 *Kat PEYEM Ou Pare!*\n\nBonjou ${lastCreated.name}!\n\n📱 *Telefòn:* ${lastCreated.phone}\n🔑 *Modpas:* ${lastCreated.password}\n🔗 *Lyen:* ${LOGIN_PAGE}\n\n1️⃣ Ale sou lyen an\n2️⃣ Antre nimewo ak modpas\n3️⃣ Kat ou ap afiche!\n\n_PEYEM Virtual Card_`;
+  navigator.clipboard.writeText(msg).then(()=>showToast('📲 Mesaj kopye!')).catch(()=>showToast('❌ Pa kapab kopye',1));
+}
+async function loadClients(){
+  try{
+    const res=await fetch(`${API}/admin/clients`,{headers:{'Authorization':`Bearer ${adminToken}`}});
+    const data=await res.json();
+    if(!data.success)return;
+    document.getElementById('clientCount').textContent=data.clients.length;
+    const el=document.getElementById('clientsList');
+    if(!data.clients.length){el.innerHTML='<div class="empty"><span class="icon">👥</span>Okenn kliyan</div>';return;}
+    el.innerHTML=data.clients.map(c=>{
+      const exp=new Date(c.expiresAt);
+      const expired=new Date()>exp;
+      return`<div class="client-card"><div class="client-top"><div><div class="client-name">${c.name}</div><div class="client-phone">📱 ${c.phone}</div></div><div class="client-badge ${expired?'expired':''}">${expired?'⚠️ Ekspire':'✅ Aktif'}</div></div><div class="client-info"><span>💰 $${c.balanceUSD}</span><span>⏳ ${exp.toLocaleDateString('fr-FR')}</span></div><div class="client-actions"><button class="btn-sm red" onclick="deleteClient('${c.phone}','${c.name}')">🗑 Efase</button></div></div>`;
+    }).join('');
+  }catch(e){showToast('❌ Pa ka chaje kliyan',1);}
+}
+async function deleteClient(phone,name){
+  if(!confirm(`Efase kont ${name}?`))return;
+  try{const res=await fetch(`${API}/admin/delete/${encodeURIComponent(phone)}`,{method:'DELETE',headers:{'Authorization':`Bearer ${adminToken}`}});const data=await res.json();if(data.success){showToast('🗑 Efase');loadClients();}else showToast('❌ '+data.error,1);}catch(e){showToast('❌ Erè',1);}
+}
+function showToast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' error':'');setTimeout(()=>t.className='toast',3000);}
+</script>
+</body>
+</html>
