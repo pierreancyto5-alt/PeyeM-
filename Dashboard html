@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PEYEM – Ma Carte</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root{--bg:#050b18;--surface:#0d1a2e;--surface2:#112240;--blue:#0a84ff;--cyan:#00d4ff;--accent:#64ffda;--text:#e8f1ff;--muted:#7a93b5;--border:rgba(10,132,255,0.18);--blue-grad:linear-gradient(135deg,#0a84ff,#2563eb);--glow:0 0 40px rgba(10,132,255,0.25)}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(10,132,255,.12) 0%,transparent 60%),radial-gradient(ellipse 40% 40% at 80% 80%,rgba(0,212,255,.08) 0%,transparent 60%);pointer-events:none;z-index:0}
+  header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(5,11,24,.9);backdrop-filter:blur(12px)}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:.12em;background:linear-gradient(90deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .logo span{font-weight:400;font-size:.6rem;display:block;letter-spacing:.18em;-webkit-text-fill-color:var(--muted)}
+  .user-info{display:flex;align-items:center;gap:10px}
+  .user-name{font-size:.82rem;font-weight:600;text-align:right}
+  .user-sub{font-size:.62rem;color:var(--muted)}
+  .logout-btn{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#ff6b6b;padding:6px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer}
+  main{position:relative;z-index:5;max-width:460px;margin:0 auto;padding:20px 16px 100px}
+
+  .loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px}
+  .spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-text{color:var(--muted);font-size:.85rem}
+
+  /* Balance */
+  .balance-hero{background:linear-gradient(135deg,#0d1a2e,#051020);border:1px solid rgba(10,132,255,.2);border-radius:20px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:var(--glow)}
+  .balance-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(10,132,255,.15),transparent 70%)}
+  .balance-label{font-size:.68rem;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+  .balance-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:2.4rem;color:#fff;margin-bottom:4px;position:relative;z-index:1}
+  .balance-amount .sym{font-size:1.2rem;opacity:.6}
+  .balance-sub{font-size:.75rem;color:var(--muted);position:relative;z-index:1}
+  .balance-bar-wrap{margin-top:16px;position:relative;z-index:1}
+  .balance-bar-label{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:6px}
+  .balance-bar{height:6px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
+  .balance-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:10px;transition:width .6s ease}
+
+  /* Chips */
+  .status-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .chip{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:.68rem;font-weight:600;border:1px solid var(--border);background:rgba(10,132,255,.07)}
+  .chip.green{border-color:rgba(100,255,218,.22);background:rgba(100,255,218,.07);color:var(--accent)}
+  .chip.yellow{border-color:rgba(255,200,0,.22);background:rgba(255,200,0,.07);color:#ffd700}
+  .chip.red{border-color:rgba(255,80,80,.22);background:rgba(255,80,80,.07);color:#ff6b6b}
+  .dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+  /* Card */
+  .card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;text-align:center;margin-bottom:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px}
+  .card-title::before,.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+  .virtual-card{position:relative;border-radius:20px;padding:24px 22px 20px;background:linear-gradient(135deg,#0d1a2e 0%,#0a1628 40%,#051020 100%);border:1px solid rgba(10,132,255,.2);box-shadow:var(--glow),0 20px 50px rgba(0,0,0,.5);overflow:hidden;margin-bottom:14px;animation:cardReveal .7s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes cardReveal{from{opacity:0;transform:translateY(24px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .virtual-card::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(10,132,255,.16),transparent 70%)}
+  .card-line{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);opacity:.55}
+  .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;position:relative;z-index:1}
+  .card-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:.15em;background:linear-gradient(90deg,#fff,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .card-type-label{font-size:.58rem;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:2px}
+  .card-chip{width:38px;height:28px;background:linear-gradient(135deg,#d4a843,#f0c85a,#a8832a);border-radius:5px;position:relative}
+  .card-chip::before{content:'';position:absolute;inset:3px;border:1px solid rgba(0,0,0,.2);border-radius:3px}
+  .card-number{font-family:'Syne',sans-serif;font-size:1rem;font-weight:600;letter-spacing:.2em;color:rgba(255,255,255,.88);margin-bottom:16px;position:relative;z-index:1;cursor:pointer}
+  .card-footer{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:1}
+  .card-field label{font-size:.5rem;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;display:block;margin-bottom:3px}
+  .card-field .val{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.88)}
+  .card-field .val.name{text-transform:uppercase;font-size:.75rem;letter-spacing:.08em}
+  .cvv-row{display:flex;align-items:center;gap:5px}
+  .cvv-btn{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.75rem}
+
+  /* Actions */
+  .card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+  .btn-action{padding:11px;border-radius:11px;border:1px solid var(--border);background:rgba(10,132,255,.07);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+  .btn-action:hover{border-color:var(--blue);background:rgba(10,132,255,.14)}
+  .btn-action.primary{background:var(--blue-grad);border-color:transparent;color:#fff;box-shadow:0 4px 16px rgba(10,132,255,.3)}
+
+  /* Modal */
+  .modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(5,11,24,.92);backdrop-filter:blur(16px);align-items:flex-end;justify-content:center}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:460px;animation:slideUp .3s ease}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:4px}
+  .modal-sub{color:var(--muted);font-size:.78rem;margin-bottom:18px}
+  .modal-balance{background:rgba(10,132,255,.08);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.8rem;display:flex;justify-content:space-between;align-items:center}
+  .modal-balance span{color:var(--muted)}
+  .modal-balance strong{color:var(--accent);font-family:'Syne',sans-serif;font-size:1rem}
+  .modal-field{margin-bottom:12px}
+  .modal-field label{display:block;font-size:.68rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+  .modal-field input{width:100%;background:rgba(10,132,255,.06);border:1px solid var(--border);border-radius:10px;padding:13px 15px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:all .2s}
+  .modal-field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(10,132,255,.1)}
+  .modal-field input::placeholder{color:rgba(122,147,181,.4)}
+  .err-modal{color:#ff6b6b;font-size:.76rem;margin-bottom:10px;display:none}
+  .err-modal.show{display:block}
+  .btn-modal{width:100%;padding:14px;background:var(--blue-grad);border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 6px 22px rgba(10,132,255,.3)}
+  .btn-modal:disabled{opacity:.6;cursor:not-allowed}
+  .btn-cancel{width:100%;padding:12px;background:none;border:1px solid var(--border);border-radius:12px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;margin-top:8px}
+
+  /* Info */
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+  .info-card{background:rgba(13,26,46,.75);border:1px solid var(--border);border-radius:13px;padding:13px}
+  .ic-label{font-size:.62rem;font-weight:600;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+  .ic-val{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem}
+
+  /* How to */
+  .how-card{background:rgba(10,132,255,.05);border:1px solid rgba(10,132,255,.15);border-radius:14px;padding:16px;margin-bottom:14px}
+  .how-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;margin-bottom:10px;color:var(--cyan)}
+  .how-step{display:flex;gap:9px;align-items:flex-start;margin-bottom:8px;font-size:.77rem;color:var(--muted);line-height:1.5}
+  .how-num{width:20px;height:20px;border-radius:50%;background:var(--blue-grad);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;flex-shrink:0;color:#fff}
+
+  /* Transactions */
+  .section-hd{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .section-hd .sdot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .tx-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+  .tx-item{background:rgba(13,26,46,.75);border:1px solid var(--border);border-radius:13px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center}
+  .tx-desc{font-weight:600;font-size:.82rem;margin-bottom:2px}
+  .tx-date{font-size:.68rem;color:var(--muted)}
+  .tx-amount{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;color:#ff6b6b;white-space:nowrap}
+  .empty-tx{text-align:center;padding:24px;color:var(--muted);font-size:.82rem}
+  .empty-tx span{font-size:1.8rem;display:block;margin-bottom:8px}
+
+  .warn{background:rgba(255,80,80,.05);border:1px solid rgba(255,80,80,.12);border-radius:12px;padding:12px 14px;font-size:.75rem;color:rgba(255,150,150,.75);line-height:1.6;display:flex;gap:8px;margin-bottom:16px}
+
+  .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-14px);background:rgba(100,255,218,.12);border:1px solid rgba(100,255,218,.28);color:var(--accent);padding:9px 20px;border-radius:26px;font-size:.78rem;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:200;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.error{background:rgba(255,80,80,.12);border-color:rgba(255,80,80,.28);color:#ff6b6b}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
+  .wa-btn{position:fixed;bottom:16px;right:16px;z-index:50;display:flex;align-items:center;gap:8px;background:#25d366;color:#fff;padding:11px 16px;border-radius:28px;text-decoration:none;font-weight:600;font-size:.8rem;box-shadow:0 4px 16px rgba(37,211,102,.35)}
+  ::-webkit-scrollbar{width:3px}
+  ::-webkit-scrollbar-thumb{background:rgba(10,132,255,.25);border-radius:2px}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="logo">PEYEM<span>VIRTUAL CARD</span></div></div>
+  <div class="user-info">
+    <div><div class="user-name" id="headerName">—</div><div class="user-sub">Kont aktif</div></div>
+    <button class="logout-btn" onclick="doLogout()">Dekonekte</button>
+  </div>
+</header>
+
+<main>
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
+    <div class="loading-text">Chaje kat ou…</div>
+  </div>
+
+  <div id="mainContent" style="display:none">
+
+    <div class="balance-hero">
+      <div class="balance-label">💰 Balans Disponib</div>
+      <div class="balance-amount"><span class="sym">$</span><span id="balanceAmt">0.00</span></div>
+      <div class="balance-sub">USD · Kat Prepayé PEYEM</div>
+      <div class="balance-bar-wrap">
+        <div class="balance-bar-label"><span>$0</span><span id="balanceMax">$0</span></div>
+        <div class="balance-bar"><div class="balance-bar-fill" id="balanceFill" style="width:100%"></div></div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="chip green"><div class="dot"></div>Kat Aktif</div>
+      <div class="chip" id="expiryChip"><div class="dot"></div><span id="expiryTxt">—</span></div>
+      <div class="chip" id="balanceChip"><div class="dot"></div><span id="balanceTxt">—</span></div>
+    </div>
+
+    <div class="card-title">Kat Vityèl Ou</div>
+    <div class="virtual-card">
+      <div class="card-line"></div>
+      <div class="card-header">
+        <div><div class="card-brand">PEYEM</div><div class="card-type-label">Virtual Card · Prepaid</div></div>
+        <div class="card-chip"></div>
+      </div>
+      <div class="card-number" id="cardNumber" onclick="copyNum()" title="Klike pou kopye">•••• •••• •••• ••••</div>
+      <div class="card-footer">
+        <div class="card-field"><label>Titulaire</label><div class="val name" id="cardName">—</div></div>
+        <div class="card-field"><label>Expiration</label><div class="val" id="cardExpiry">—</div></div>
+        <div class="card-field">
+          <label>CVV</label>
+          <div class="cvv-row">
+            <div class="val" id="cardCvv">•••</div>
+            <button class="cvv-btn" onclick="toggleCvv()" id="cvvBtn">👁</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-actions">
+      <button class="btn-action" onclick="copyNum()">📋 Kopye Nimewo</button>
+      <button class="btn-action" onclick="copyAll()">📄 Kopye Tout</button>
+      <button class="btn-action" onclick="toggleCvv()">🔒 CVV</button>
+      <button class="btn-action primary" onclick="openModal()">➕ Rapòte Achte</button>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="ic-label">📅 Kreye</div><div class="ic-val" id="createdAt">—</div></div>
+      <div class="info-card"><div class="ic-label">⏳ Ekspire</div><div class="ic-val" id="expiresAt">—</div></div>
+    </div>
+
+    <div class="how-card">
+      <div class="how-title">💡 Kijan pou Itilize Kat la</div>
+      <div class="how-step"><div class="how-num">1</div><span>Ale sou Amazon, AliExpress, Netflix, etc.</span></div>
+      <div class="how-step"><div class="how-num">2</div><span>Chwazi "Pay by card" epi antre nimewo kat la</span></div>
+      <div class="how-step"><div class="how-num">3</div><span>Antre dat ekspirason ak CVV</span></div>
+      <div class="how-step"><div class="how-num">4</div><span>Apre achte, klike "Rapòte Achte" pou mete ajou balans ou</span></div>
+    </div>
+
+    <div class="warn"><span>⚠️</span><span>Pa pataje nimewo kat ou ak pèsonn. PEYEM pa responsab pou move itilizasyon.</span></div>
+
+    <div class="section-hd"><div class="sdot"></div>Istwa Tranzaksyon</div>
+    <div class="tx-list" id="txList">
+      <div class="empty-tx"><span>📭</span>Okenn tranzaksyon pou kounye a</div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-title">➕ Rapòte Yon Achte</div>
+    <div class="modal-sub">Antre montan ou te depanse pou mete ajou balans ou.</div>
+    <div class="modal-balance"><span>Balans aktyèl:</span><strong id="modalBalance">$0.00</strong></div>
+    <div class="err-modal" id="modalErr"></div>
+    <div class="modal-field">
+      <label>Montan Depanse (USD $)</label>
+      <input type="number" id="txAmount" placeholder="0.00" step="0.01" min="0.01"/>
+    </div>
+    <div class="modal-field">
+      <label>Deskripsyon (opsyonèl)</label>
+      <input type="text" id="txDesc" placeholder="Amazon, Netflix, AliExpress..."/>
+    </div>
+    <button class="btn-modal" id="txBtn" onclick="submitPurchase()">✅ Konfime Achte</button>
+    <button class="btn-cancel" onclick="closeModal()">Anile</button>
+  </div>
+</div>
+
+<a class="wa-btn" href="https://wa.me/50934819125" target="_blank">📲 Support</a>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://peyem-api.pierreancyto5.workers.dev';
+let clientData = null;
+let cvvVisible = false;
+
+window.addEventListener('load', async () => {
+  const token = localStorage.getItem('peyem_token');
+  if (!token) { window.location.href = 'login.html'; return; }
+  try {
+    const res = await fetch(`${API}/my-card`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const data = await res.json();
+    if (!data.success) { localStorage.removeItem('peyem_token'); window.location.href = 'login.html'; return; }
+    clientData = data.client;
+    localStorage.setItem('peyem_client', JSON.stringify(clientData));
+    render();
+  } catch(e) {
+    const cached = localStorage.getItem('peyem_client');
+    if (cached) { clientData = JSON.parse(cached); render(); }
+    else { window.location.href = 'login.html'; }
+  }
+});
+
+function render() {
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+  const c = clientData;
+  document.getElementById('headerName').textContent = c.name.split(' ')[0];
+  document.getElementById('cardNumber').textContent = c.card.number.replace(/(.{4})/g,'$1 ').trim();
+  document.getElementById('cardName').textContent = c.name.toUpperCase().substring(0,22);
+  document.getElementById('cardExpiry').textContent = c.card.expiry;
+  document.getElementById('cardCvv').textContent = '•••';
+
+  const bal = parseFloat(c.balanceUSD) || 0;
+  const init = parseFloat(c.initialBalanceUSD) || bal;
+  document.getElementById('balanceAmt').textContent = bal.toFixed(2);
+  document.getElementById('balanceMax').textContent = '$' + init.toFixed(2);
+  document.getElementById('modalBalance').textContent = '$' + bal.toFixed(2);
+  const pct = init > 0 ? Math.max(0, (bal / init) * 100) : 0;
+  document.getElementById('balanceFill').style.width = pct + '%';
+
+  const bChip = document.getElementById('balanceChip');
+  const bTxt = document.getElementById('balanceTxt');
+  bChip.className = 'chip';
+  if (bal <= 0) { bChip.classList.add('red'); bTxt.textContent = 'Balans vid'; }
+  else if (pct < 20) { bChip.classList.add('yellow'); bTxt.textContent = '$' + bal.toFixed(2) + ' rete'; }
+  else { bChip.classList.add('green'); bTxt.textContent = '$' + bal.toFixed(2) + ' disponib'; }
+
+  const expires = new Date(c.expiresAt);
+  const daysLeft = Math.floor((expires - new Date()) / (1000*60*60*24));
+  document.getElementById('createdAt').textContent = new Date(c.createdAt).toLocaleDateString('fr-FR');
+  document.getElementById('expiresAt').textContent = expires.toLocaleDateString('fr-FR');
+
+  const eChip = document.getElementById('expiryChip');
+  eChip.className = 'chip';
+  if (daysLeft > 60) { eChip.classList.add('green'); document.getElementById('expiryTxt').textContent = daysLeft + ' jou rete'; }
+  else { eChip.classList.add('yellow'); document.getElementById('expiryTxt').textContent = '⚠️ ' + daysLeft + ' jou'; }
+
+  renderTx();
+}
+
+function renderTx() {
+  const list = clientData.transactions || [];
+  const el = document.getElementById('txList');
+  if (!list.length) { el.innerHTML = '<div class="empty-tx"><span>📭</span>Okenn tranzaksyon pou kounye a</div>'; return; }
+  el.innerHTML = list.map(tx => `
+    <div class="tx-item">
+      <div>
+        <div class="tx-desc">${tx.description || 'Achte'}</div>
+        <div class="tx-date">${new Date(tx.date).toLocaleDateString('fr-FR')} ${new Date(tx.date).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+      <div class="tx-amount">-$${parseFloat(tx.amount).toFixed(2)}</div>
+    </div>`).join('');
+}
+
+function toggleCvv() {
+  cvvVisible = !cvvVisible;
+  document.getElementById('cardCvv').textContent = cvvVisible ? clientData.card.cvv : '•••';
+  document.getElementById('cvvBtn').textContent = cvvVisible ? '🙈' : '👁';
+}
+function copyNum() {
+  navigator.clipboard.writeText(clientData.card.number.replace(/\s/g,'')).then(()=>showToast('📋 Nimewo kopye!')).catch(()=>showToast('❌ Pa kapab kopye',1));
+}
+function copyAll() {
+  const t = `CARTE PEYEM\nNimewo: ${clientData.card.number}\nExpiry: ${clientData.card.expiry}\nCVV: ${clientData.card.cvv}\nNon: ${clientData.name}\nBalans: $${parseFloat(clientData.balanceUSD).toFixed(2)}`;
+  navigator.clipboard.writeText(t).then(()=>showToast('📄 Tout enfòmasyon kopye!')).catch(()=>showToast('❌ Erè',1));
+}
+
+function openModal() {
+  document.getElementById('modalErr').classList.remove('show');
+  document.getElementById('txAmount').value = '';
+  document.getElementById('txDesc').value = '';
+  document.getElementById('modalBalance').textContent = '$' + parseFloat(clientData.balanceUSD).toFixed(2);
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+
+async function submitPurchase() {
+  const amount = parseFloat(document.getElementById('txAmount').value);
+  const desc = document.getElementById('txDesc').value.trim() || 'Achte';
+  const errEl = document.getElementById('modalErr');
+  errEl.classList.remove('show');
+
+  if (!amount || amount <= 0) { errEl.textContent = '⚠️ Antre yon montan valid'; errEl.classList.add('show'); return; }
+  if (amount > parseFloat(clientData.balanceUSD)) { errEl.textContent = '❌ Montan depase balans ou ($' + parseFloat(clientData.balanceUSD).toFixed(2) + ')'; errEl.classList.add('show'); return; }
+
+  const btn = document.getElementById('txBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Ap traite...';
+
+  try {
+    const token = localStorage.getItem('peyem_token');
+    const res = await fetch(`${API}/transaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ amount, description: desc })
+    });
+    const data = await res.json();
+    if (data.success) {
+      clientData.balanceUSD = data.newBalance;
+      clientData.transactions = clientData.transactions || [];
+      clientData.transactions.unshift({ amount, description: desc, date: new Date().toISOString(), balanceAfter: data.newBalance });
+      localStorage.setItem('peyem_client', JSON.stringify(clientData));
+      closeModal();
+      render();
+      showToast('✅ Achte anrejistre! Balans mete ajou.');
+    } else {
+      errEl.textContent = '❌ ' + data.error; errEl.classList.add('show');
+    }
+  } catch(e) {
+    errEl.textContent = '❌ Erè rezeau. Eseye ankò.'; errEl.classList.add('show');
+  }
+  btn.disabled = false; btn.textContent = '✅ Konfime Achte';
+}
+
+async function doLogout() {
+  const token = localStorage.getItem('peyem_token');
+  if (token) { try { await fetch(`${API}/logout`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); } catch(e){} }
+  localStorage.removeItem('peyem_token'); localStorage.removeItem('peyem_client');
+  window.location.href = 'login.html';
+}
+
+function showToast(msg, err) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (err ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+</script>
+</body>
+</html>
