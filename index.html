@@ -1,1537 +1,430 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PeyeM — Kat Vityèl & Sèvis Dijital Ayiti</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PEYEM – Carte Virtuelle</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
-:root {
-  --bg: #060912;
-  --surface: #0d1120;
-  --card: #111827;
-  --border: rgba(255,255,255,0.07);
-  --blue: #3b82f6;
-  --cyan: #06b6d4;
-  --green: #10b981;
-  --gold: #f59e0b;
-  --red: #ef4444;
-  --white: #f8fafc;
-  --gray: #64748b;
-  --light: #94a3b8;
-}
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: 'DM Sans', sans-serif;
-  overflow-x: hidden;
-  min-height: 100vh;
-}
-
-/* BG GRID */
-body::before {
-  content:'';
-  position:fixed; inset:0;
-  background-image:
-    linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events:none; z-index:0;
-}
-
-body::after {
-  content:'';
-  position:fixed; inset:0;
-  background:
-    radial-gradient(ellipse at 10% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 90% 80%, rgba(6,182,212,0.06) 0%, transparent 50%);
-  pointer-events:none; z-index:0;
-}
-
-/* HEADER */
-header {
-  position:fixed; top:0; left:0; right:0; z-index:100;
-  display:flex; align-items:center; justify-content:space-between;
-  padding: 1rem 2rem;
-  background: rgba(6,9,18,0.9);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-}
-
-.logo {
-  font-family:'Syne', sans-serif;
-  font-size:1.5rem;
-  font-weight:800;
-  letter-spacing:-0.02em;
-}
-.logo span { color: var(--cyan); }
-.logo small {
-  display:block;
-  font-family:'DM Mono', monospace;
-  font-size:0.4rem;
-  letter-spacing:0.3em;
-  color:var(--gray);
-  font-weight:400;
-  margin-top:-2px;
-  text-transform:uppercase;
-}
-
-nav { display:flex; gap:1.5rem; }
-nav a {
-  font-size:0.85rem;
-  font-weight:500;
-  color:var(--gray);
-  text-decoration:none;
-  cursor:pointer;
-  transition:color 0.2s;
-  letter-spacing:0.02em;
-}
-nav a:hover, nav a.active { color:var(--white); }
-
-.header-btns { display:flex; gap:0.7rem; align-items:center; }
-.btn-ghost {
-  background:transparent;
-  border:1px solid var(--border);
-  color:var(--light);
-  padding:0.5rem 1rem;
-  font-family:'DM Sans',sans-serif;
-  font-size:0.82rem;
-  font-weight:500;
-  cursor:pointer;
-  border-radius:6px;
-  transition:all 0.2s;
-}
-.btn-ghost:hover { border-color:var(--blue); color:var(--white); }
-.btn-primary {
-  background: linear-gradient(135deg, var(--blue), var(--cyan));
-  color:var(--white);
-  border:none;
-  padding:0.5rem 1.2rem;
-  font-family:'DM Sans',sans-serif;
-  font-size:0.82rem;
-  font-weight:600;
-  cursor:pointer;
-  border-radius:6px;
-  transition:opacity 0.2s, transform 0.1s;
-}
-.btn-primary:hover { opacity:0.9; transform:translateY(-1px); }
-
-/* HAMBURGER */
-.hamburger {
-  display:none;
-  flex-direction:column; gap:5px;
-  background:none; border:none; cursor:pointer; padding:4px;
-}
-.hamburger span { width:22px; height:2px; background:var(--white); display:block; transition:all 0.3s; }
-
-.mobile-nav {
-  display:none;
-  position:fixed; top:61px; left:0; right:0;
-  background:rgba(6,9,18,0.97);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-  z-index:99; flex-direction:column; padding:0.5rem 0;
-}
-.mobile-nav.open { display:flex; }
-.mobile-nav a {
-  padding:0.9rem 2rem;
-  font-size:0.95rem; font-weight:500;
-  color:var(--gray); cursor:pointer;
-  border-left:2px solid transparent;
-  transition:all 0.2s; display:block;
-}
-.mobile-nav a:hover { color:var(--white); border-left-color:var(--cyan); background:rgba(6,182,212,0.05); }
-
-/* PAGES */
-.page { display:none; min-height:100vh; padding-top:70px; position:relative; z-index:1; }
-.page.active { display:block; }
-
-/* ===== HOME ===== */
-#home {
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  min-height:100vh; padding-top:70px;
-  text-align:center; padding-left:1rem; padding-right:1rem;
-}
-
-.hero-badge {
-  display:inline-flex; align-items:center; gap:0.5rem;
-  background:rgba(59,130,246,0.1);
-  border:1px solid rgba(59,130,246,0.2);
-  border-radius:20px;
-  padding:0.35rem 0.9rem;
-  font-size:0.75rem;
-  font-family:'DM Mono',monospace;
-  color:var(--cyan);
-  letter-spacing:0.1em;
-  margin-bottom:1.5rem;
-  animation: fadeUp 0.6s ease both;
-}
-.badge-dot { width:6px; height:6px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-.hero-title {
-  font-family:'Syne',sans-serif;
-  font-size: clamp(2.8rem, 8vw, 6.5rem);
-  font-weight:800;
-  line-height:1;
-  letter-spacing:-0.03em;
-  animation: fadeUp 0.6s 0.1s ease both;
-  margin-bottom:0.3rem;
-}
-.hero-title .grad {
-  background: linear-gradient(135deg, var(--blue), var(--cyan), var(--green));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-
-.hero-sub {
-  font-size: clamp(1rem, 2.5vw, 1.4rem);
-  font-weight:300;
-  color:var(--light);
-  max-width:560px;
-  line-height:1.6;
-  margin: 1rem auto 2rem;
-  animation: fadeUp 0.6s 0.2s ease both;
-}
-
-.hero-actions {
-  display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;
-  animation: fadeUp 0.6s 0.3s ease both;
-  margin-bottom:3rem;
-}
-
-.btn-lg {
-  padding:0.85rem 2rem;
-  font-size:1rem; font-weight:600;
-  border-radius:8px; cursor:pointer;
-  transition:all 0.2s; border:none;
-  font-family:'DM Sans',sans-serif;
-}
-.btn-lg-primary {
-  background: linear-gradient(135deg, var(--blue), var(--cyan));
-  color:var(--white);
-}
-.btn-lg-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(59,130,246,0.3); }
-.btn-lg-outline {
-  background:transparent;
-  border:1px solid var(--border);
-  color:var(--light);
-}
-.btn-lg-outline:hover { border-color:var(--blue); color:var(--white); }
-
-/* DEMO CARD */
-.demo-card-wrap {
-  animation: fadeUp 0.6s 0.4s ease both;
-  perspective: 1000px;
-  margin-bottom:3rem;
-}
-.demo-card {
-  width:340px;
-  height:200px;
-  background: linear-gradient(135deg, #1e3a8a, #1e40af, #0369a1);
-  border-radius:16px;
-  padding:1.5rem;
-  position:relative;
-  overflow:hidden;
-  box-shadow: 0 20px 60px rgba(59,130,246,0.3);
-  transition:transform 0.3s;
-  margin:0 auto;
-}
-.demo-card:hover { transform:rotateY(-5deg) rotateX(3deg); }
-.demo-card::before {
-  content:'';
-  position:absolute; top:-40px; right:-40px;
-  width:180px; height:180px;
-  background:rgba(255,255,255,0.05);
-  border-radius:50%;
-}
-.demo-card::after {
-  content:'';
-  position:absolute; bottom:-60px; left:-20px;
-  width:200px; height:200px;
-  background:rgba(255,255,255,0.03);
-  border-radius:50%;
-}
-.card-chip {
-  width:40px; height:30px;
-  background:linear-gradient(135deg, #ffd700, #ffa500);
-  border-radius:5px;
-  margin-bottom:1.5rem;
-  position:relative; z-index:1;
-}
-.card-number {
-  font-family:'DM Mono',monospace;
-  font-size:1.1rem;
-  letter-spacing:0.15em;
-  margin-bottom:1rem;
-  position:relative; z-index:1;
-}
-.card-bottom {
-  display:flex; justify-content:space-between; align-items:flex-end;
-  position:relative; z-index:1;
-}
-.card-holder { font-size:0.75rem; color:rgba(255,255,255,0.7); text-transform:uppercase; letter-spacing:0.1em; }
-.card-name { font-size:0.95rem; font-weight:600; letter-spacing:0.05em; }
-.card-expiry { text-align:right; }
-.card-expiry-label { font-size:0.6rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:0.1em; }
-.card-expiry-val { font-family:'DM Mono',monospace; font-size:0.9rem; }
-.card-network {
-  position:absolute; bottom:1.2rem; right:1.2rem;
-  font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800;
-  color:rgba(255,255,255,0.9); z-index:1;
-}
-
-/* STATS ROW */
-.stats-row {
-  display:flex; gap:2rem; justify-content:center; flex-wrap:wrap;
-  animation: fadeUp 0.6s 0.5s ease both;
-}
-.stat-item { text-align:center; }
-.stat-val {
-  font-family:'Syne',sans-serif;
-  font-size:1.8rem; font-weight:800;
-  background: linear-gradient(135deg, var(--blue), var(--cyan));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.stat-lbl { font-size:0.72rem; color:var(--gray); letter-spacing:0.1em; text-transform:uppercase; margin-top:0.2rem; }
-
-/* ===== SECTION SHARED ===== */
-.sec-wrap { max-width:1100px; margin:0 auto; padding:3rem 1.5rem; }
-.sec-tag {
-  font-family:'DM Mono',monospace;
-  font-size:0.65rem; letter-spacing:0.3em;
-  color:var(--cyan); text-transform:uppercase;
-  margin-bottom:0.7rem;
-}
-.sec-title {
-  font-family:'Syne',sans-serif;
-  font-size:clamp(1.8rem,4vw,3rem);
-  font-weight:800; letter-spacing:-0.02em;
-  margin-bottom:0.5rem;
-}
-.sec-title span { color:var(--cyan); }
-.sec-desc { color:var(--light); font-size:0.95rem; line-height:1.7; max-width:500px; }
-
-/* ===== SERVICES ===== */
-#services { padding-top:70px; }
-
-.services-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
-  gap:1px;
-  background:var(--border);
-  margin-top:2rem;
-  border:1px solid var(--border);
-}
-.service-card {
-  background:var(--card);
-  padding:2rem 1.8rem;
-  position:relative; overflow:hidden;
-  transition:background 0.2s;
-  cursor:pointer;
-}
-.service-card:hover { background:#151f35; }
-.service-card::after {
-  content:'';
-  position:absolute; bottom:0; left:0; right:0;
-  height:2px;
-  background:linear-gradient(90deg, var(--blue), var(--cyan));
-  transform:scaleX(0); transform-origin:left;
-  transition:transform 0.3s;
-}
-.service-card:hover::after { transform:scaleX(1); }
-
-.svc-icon {
-  width:48px; height:48px;
-  background:rgba(59,130,246,0.1);
-  border:1px solid rgba(59,130,246,0.2);
-  border-radius:10px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.4rem;
-  margin-bottom:1.2rem;
-}
-.svc-name {
-  font-family:'Syne',sans-serif;
-  font-size:1.1rem; font-weight:700;
-  margin-bottom:0.5rem;
-}
-.svc-desc { font-size:0.85rem; color:var(--light); line-height:1.6; margin-bottom:1rem; }
-.svc-price {
-  font-family:'DM Mono',monospace;
-  font-size:0.85rem; color:var(--cyan);
-}
-.svc-badge {
-  position:absolute; top:1rem; right:1rem;
-  background:rgba(16,185,129,0.15);
-  border:1px solid rgba(16,185,129,0.3);
-  color:var(--green);
-  font-size:0.6rem; font-family:'DM Mono',monospace;
-  letter-spacing:0.15em; text-transform:uppercase;
-  padding:0.2rem 0.5rem; border-radius:3px;
-}
-
-/* ===== KAT VITYÈL ===== */
-#virtual-card { padding-top:70px; }
-
-.card-generator {
-  max-width:800px; margin:2rem auto;
-  display:grid; grid-template-columns:1fr 1fr; gap:2rem;
-  padding:0 1.5rem;
-}
-@media(max-width:650px){ .card-generator { grid-template-columns:1fr; } }
-
-.card-form-section { }
-.card-preview-section {
-  display:flex; flex-direction:column; align-items:center; gap:1.5rem;
-}
-
-.form-title {
-  font-family:'Syne',sans-serif;
-  font-size:1.3rem; font-weight:700;
-  margin-bottom:1.5rem;
-}
-
-.form-group { margin-bottom:1.2rem; }
-.form-label {
-  display:block;
-  font-size:0.7rem; font-weight:500;
-  letter-spacing:0.15em; text-transform:uppercase;
-  color:var(--gray); margin-bottom:0.5rem;
-  font-family:'DM Mono',monospace;
-}
-.form-input, .form-select {
-  width:100%;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:6px;
-  color:var(--white);
-  padding:0.7rem 0.9rem;
-  font-family:'DM Sans',sans-serif;
-  font-size:0.9rem;
-  transition:border-color 0.2s;
-  outline:none;
-}
-.form-input:focus, .form-select:focus { border-color:var(--blue); }
-.form-select option { background:var(--bg); }
-
-.amount-grid {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem;
-  margin-top:0.5rem;
-}
-.amount-btn {
-  background:var(--card);
-  border:1px solid var(--border);
-  color:var(--light);
-  padding:0.5rem;
-  font-size:0.8rem; font-weight:600;
-  font-family:'DM Mono',monospace;
-  cursor:pointer; border-radius:5px;
-  transition:all 0.2s; text-align:center;
-}
-.amount-btn:hover, .amount-btn.active {
-  border-color:var(--cyan); color:var(--cyan);
-  background:rgba(6,182,212,0.08);
-}
-
-.generate-btn {
-  width:100%;
-  background:linear-gradient(135deg, var(--blue), var(--cyan));
-  color:var(--white); border:none;
-  padding:0.9rem; border-radius:8px;
-  font-family:'DM Sans',sans-serif;
-  font-size:1rem; font-weight:600;
-  cursor:pointer; transition:all 0.2s;
-  margin-top:0.5rem;
-}
-.generate-btn:hover { opacity:0.9; transform:translateY(-1px); box-shadow:0 8px 25px rgba(59,130,246,0.3); }
-
-/* LIVE CARD */
-.live-card {
-  width:100%; max-width:320px;
-  height:190px;
-  border-radius:14px;
-  padding:1.3rem;
-  position:relative; overflow:hidden;
-  box-shadow:0 15px 40px rgba(0,0,0,0.4);
-  transition:all 0.5s;
-}
-.live-card.visa-style {
-  background:linear-gradient(135deg, #1e3a8a, #1e40af, #075985);
-}
-.live-card.mastercard-style {
-  background:linear-gradient(135deg, #7c2d12, #9a3412, #b45309);
-}
-.live-card::before {
-  content:''; position:absolute;
-  top:-50px; right:-50px;
-  width:160px; height:160px;
-  background:rgba(255,255,255,0.05);
-  border-radius:50%;
-}
-.live-card-chip {
-  width:36px; height:27px;
-  background:linear-gradient(135deg, #ffd700, #ffa500);
-  border-radius:4px; margin-bottom:1.2rem;
-  position:relative; z-index:1;
-}
-.live-card-num {
-  font-family:'DM Mono',monospace;
-  font-size:0.95rem; letter-spacing:0.12em;
-  margin-bottom:0.9rem; position:relative; z-index:1;
-  text-shadow:0 1px 3px rgba(0,0,0,0.3);
-}
-.live-card-bot {
-  display:flex; justify-content:space-between; align-items:flex-end;
-  position:relative; z-index:1;
-}
-.live-card-holder-lbl { font-size:0.55rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:0.1em; }
-.live-card-name { font-size:0.8rem; font-weight:600; letter-spacing:0.06em; margin-top:2px; }
-.live-card-exp-lbl { font-size:0.55rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:0.1em; text-align:right; }
-.live-card-exp { font-family:'DM Mono',monospace; font-size:0.85rem; text-align:right; }
-.live-card-network {
-  position:absolute; bottom:1rem; right:1.2rem;
-  font-family:'Syne',sans-serif; font-size:1rem; font-weight:800;
-  color:rgba(255,255,255,0.85); z-index:1;
-}
-
-.card-details-box {
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:1.2rem;
-  width:100%; max-width:320px;
-}
-.card-detail-row {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:0.5rem 0;
-  border-bottom:1px solid var(--border);
-}
-.card-detail-row:last-child { border-bottom:none; }
-.cd-label { font-size:0.72rem; color:var(--gray); font-family:'DM Mono',monospace; }
-.cd-value { font-size:0.85rem; font-weight:500; font-family:'DM Mono',monospace; color:var(--cyan); }
-
-/* ===== PEMAN ===== */
-#payment { padding-top:70px; }
-
-.payment-methods {
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:1rem; margin-top:2rem;
-}
-.pm-card {
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:1.5rem;
-  display:flex; align-items:center; gap:1rem;
-  cursor:pointer; transition:all 0.2s;
-}
-.pm-card:hover, .pm-card.selected {
-  border-color:var(--blue);
-  background:rgba(59,130,246,0.05);
-}
-.pm-icon { font-size:2rem; flex-shrink:0; }
-.pm-name { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; }
-.pm-desc { font-size:0.78rem; color:var(--light); margin-top:0.2rem; }
-.pm-check {
-  margin-left:auto;
-  width:20px; height:20px;
-  border:2px solid var(--border);
-  border-radius:50%;
-  flex-shrink:0;
-  transition:all 0.2s;
-}
-.pm-card.selected .pm-check {
-  background:var(--blue); border-color:var(--blue);
-  display:flex; align-items:center; justify-content:center;
-}
-.pm-card.selected .pm-check::after { content:'✓'; font-size:0.7rem; color:white; }
-
-.checkout-box {
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:2rem; max-width:500px;
-  margin:2rem auto;
-}
-.checkout-title {
-  font-family:'Syne',sans-serif;
-  font-size:1.2rem; font-weight:700;
-  margin-bottom:1.5rem;
-  padding-bottom:1rem;
-  border-bottom:1px solid var(--border);
-}
-.checkout-row {
-  display:flex; justify-content:space-between;
-  padding:0.6rem 0;
-  font-size:0.9rem; color:var(--light);
-  border-bottom:1px solid rgba(255,255,255,0.04);
-}
-.checkout-row.total {
-  color:var(--white); font-weight:600; font-size:1rem;
-  border-top:1px solid var(--border);
-  border-bottom:none; margin-top:0.5rem;
-}
-.checkout-btn {
-  width:100%;
-  background:linear-gradient(135deg, var(--blue), var(--cyan));
-  color:var(--white); border:none;
-  padding:1rem; border-radius:8px;
-  font-family:'DM Sans',sans-serif;
-  font-size:1rem; font-weight:600;
-  cursor:pointer; margin-top:1.5rem;
-  transition:all 0.2s;
-}
-.checkout-btn:hover { opacity:0.9; transform:translateY(-1px); }
-
-/* ===== DASHBOARD ===== */
-#dashboard { padding-top:70px; }
-
-.dash-stats {
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-  gap:1px; background:var(--border);
-  border:1px solid var(--border);
-  margin-bottom:2rem;
-}
-.dash-stat {
-  background:var(--card); padding:1.5rem;
-}
-.dash-stat-val {
-  font-family:'Syne',sans-serif;
-  font-size:2rem; font-weight:800;
-  background:linear-gradient(135deg, var(--blue), var(--cyan));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.dash-stat-lbl {
-  font-size:0.7rem; color:var(--gray);
-  text-transform:uppercase; letter-spacing:0.15em;
-  font-family:'DM Mono',monospace; margin-top:0.3rem;
-}
-.dash-stat-trend { font-size:0.78rem; color:var(--green); margin-top:0.3rem; }
-
-.transactions {
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:10px; overflow:hidden;
-  margin-bottom:2rem;
-}
-.tx-header {
-  padding:1.2rem 1.5rem;
-  border-bottom:1px solid var(--border);
-  font-family:'Syne',sans-serif;
-  font-size:1rem; font-weight:700;
-}
-.tx-row {
-  display:flex; align-items:center; gap:1rem;
-  padding:0.9rem 1.5rem;
-  border-bottom:1px solid rgba(255,255,255,0.03);
-  transition:background 0.2s;
-}
-.tx-row:hover { background:rgba(255,255,255,0.02); }
-.tx-row:last-child { border-bottom:none; }
-.tx-icon {
-  width:38px; height:38px;
-  border-radius:8px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.1rem; flex-shrink:0;
-}
-.tx-icon.blue { background:rgba(59,130,246,0.15); }
-.tx-icon.green { background:rgba(16,185,129,0.15); }
-.tx-icon.red { background:rgba(239,68,68,0.15); }
-.tx-icon.gold { background:rgba(245,158,11,0.15); }
-.tx-info { flex:1; }
-.tx-name { font-size:0.9rem; font-weight:500; }
-.tx-date { font-size:0.72rem; color:var(--gray); font-family:'DM Mono',monospace; margin-top:2px; }
-.tx-amount { font-family:'DM Mono',monospace; font-size:0.9rem; font-weight:500; }
-.tx-amount.positive { color:var(--green); }
-.tx-amount.negative { color:var(--red); }
-
-/* ===== CHATBOT ===== */
-#chat-toggle {
-  position:fixed; bottom:2rem; right:2rem;
-  width:56px; height:56px;
-  background:linear-gradient(135deg, var(--blue), var(--cyan));
-  border:none; border-radius:50%;
-  cursor:pointer; z-index:200;
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.4rem;
-  box-shadow:0 4px 20px rgba(59,130,246,0.4);
-  transition:transform 0.2s;
-}
-#chat-toggle:hover { transform:scale(1.1); }
-
-#chat-win {
-  position:fixed; bottom:5.5rem; right:2rem;
-  width:min(360px, calc(100vw - 2rem));
-  height:500px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:16px;
-  z-index:199;
-  display:none; flex-direction:column;
-  box-shadow:0 20px 60px rgba(0,0,0,0.5);
-  overflow:hidden;
-}
-#chat-win.open { display:flex; }
-
-.chat-head {
-  background:linear-gradient(135deg, #1e3a8a, #0369a1);
-  padding:1rem 1.2rem;
-  display:flex; align-items:center; justify-content:space-between;
-  flex-shrink:0;
-}
-.chat-head-info { display:flex; align-items:center; gap:0.7rem; }
-.chat-avatar {
-  width:34px; height:34px; border-radius:50%;
-  background:rgba(255,255,255,0.15);
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.1rem;
-}
-.chat-bot-name { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; }
-.chat-bot-status {
-  font-size:0.62rem; color:rgba(255,255,255,0.65);
-  display:flex; align-items:center; gap:0.3rem;
-}
-.chat-bot-status::before { content:''; width:5px; height:5px; background:var(--green); border-radius:50%; }
-.chat-x { background:none; border:none; color:rgba(255,255,255,0.6); cursor:pointer; font-size:1.1rem; }
-.chat-x:hover { color:white; }
-
-.chat-msgs {
-  flex:1; overflow-y:auto; padding:1rem;
-  display:flex; flex-direction:column; gap:0.7rem;
-  scrollbar-width:thin; scrollbar-color:var(--card) transparent;
-}
-.cmsg {
-  max-width:84%; padding:0.65rem 0.9rem;
-  font-size:0.85rem; line-height:1.5;
-  border-radius:12px;
-  animation:msgIn 0.2s ease;
-}
-@keyframes msgIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
-.cmsg.bot {
-  background:var(--card);
-  border:1px solid var(--border);
-  align-self:flex-start; border-radius:4px 12px 12px 12px;
-}
-.cmsg.user {
-  background:linear-gradient(135deg, var(--blue), var(--cyan));
-  align-self:flex-end; border-radius:12px 4px 12px 12px;
-}
-.cmsg-time { font-size:0.58rem; color:var(--gray); margin-top:0.25rem; font-family:'DM Mono',monospace; }
-
-.chat-quick {
-  display:flex; gap:0.4rem; flex-wrap:wrap;
-  padding:0.5rem 1rem 0; flex-shrink:0;
-}
-.cq-btn {
-  background:rgba(59,130,246,0.1);
-  border:1px solid rgba(59,130,246,0.2);
-  color:var(--light);
-  padding:0.25rem 0.6rem;
-  font-size:0.7rem; border-radius:12px;
-  cursor:pointer; transition:all 0.2s;
-  font-family:'DM Sans',sans-serif;
-}
-.cq-btn:hover { background:var(--blue); color:white; border-color:var(--blue); }
-
-.chat-inp-area {
-  display:flex; border-top:1px solid var(--border); flex-shrink:0;
-}
-#chat-inp {
-  flex:1; background:transparent; border:none;
-  color:var(--white); padding:0.85rem 1rem;
-  font-family:'DM Sans',sans-serif; font-size:0.9rem; outline:none;
-}
-#chat-inp::placeholder { color:var(--gray); }
-#chat-send {
-  background:linear-gradient(135deg, var(--blue), var(--cyan));
-  border:none; color:white; padding:0 1.1rem;
-  cursor:pointer; font-size:1rem; transition:opacity 0.2s; flex-shrink:0;
-}
-#chat-send:hover { opacity:0.85; }
-
-.typing { display:flex; align-items:center; gap:4px; padding:0.5rem; }
-.td { width:5px; height:5px; background:var(--blue); border-radius:50%; animation:tb 1.2s infinite; }
-.td:nth-child(2){animation-delay:0.2s} .td:nth-child(3){animation-delay:0.4s}
-@keyframes tb { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
-
-/* MODAL */
-.modal-overlay {
-  position:fixed; inset:0;
-  background:rgba(0,0,0,0.8);
-  z-index:400; display:none;
-  align-items:center; justify-content:center;
-}
-.modal-overlay.open { display:flex; }
-.modal {
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:16px;
-  max-width:440px; width:90%;
-  padding:2rem;
-  animation:fadeUp 0.3s ease;
-}
-.modal-close {
-  float:right; background:none; border:none;
-  color:var(--gray); cursor:pointer; font-size:1.3rem;
-  transition:color 0.2s;
-}
-.modal-close:hover { color:var(--white); }
-.modal h3 {
-  font-family:'Syne',sans-serif;
-  font-size:1.5rem; font-weight:800;
-  margin-bottom:0.5rem;
-}
-.modal h3 span { color:var(--cyan); }
-.modal p { color:var(--light); font-size:0.9rem; line-height:1.6; margin-bottom:1.2rem; }
-
-/* NOTIFICATION */
-.notif {
-  position:fixed; top:4.5rem; right:1rem;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-left:3px solid var(--green);
-  border-radius:8px;
-  padding:0.8rem 1.2rem;
-  max-width:280px; z-index:300;
-  font-size:0.85rem;
-  animation:slideIn 0.3s ease, fadeOut2 0.3s 2.7s both;
-}
-@keyframes slideIn { from{transform:translateX(110%);opacity:0} to{transform:none;opacity:1} }
-@keyframes fadeOut2 { to{opacity:0;transform:translateX(110%)} }
-
-@keyframes fadeUp {
-  from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none}
-}
-
-/* FOOTER */
-footer {
-  background:var(--surface);
-  border-top:1px solid var(--border);
-  padding:2rem; text-align:center;
-  position:relative; z-index:1;
-}
-footer .f-logo { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; margin-bottom:0.5rem; }
-footer .f-logo span { color:var(--cyan); }
-footer p { font-size:0.78rem; color:var(--gray); font-family:'DM Mono',monospace; }
-
-@media(max-width:600px){
-  nav { display:none; }
-  .hamburger { display:flex; }
-  .header-btns { display:none; }
-}
+  :root {
+    --bg: #050b18; --surface: #0d1a2e; --surface2: #112240;
+    --blue: #0a84ff; --cyan: #00d4ff; --accent: #64ffda;
+    --text: #e8f1ff; --muted: #7a93b5;
+    --border: rgba(10,132,255,0.18); --glass: rgba(13,26,46,0.75);
+    --blue-grad: linear-gradient(135deg, #0a84ff, #2563eb);
+    --glow: 0 0 40px rgba(10,132,255,0.25);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(10,132,255,.12) 0%,transparent 60%),radial-gradient(ellipse 40% 40% at 80% 80%,rgba(0,212,255,.08) 0%,transparent 60%);pointer-events:none;z-index:0}
+  header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);background:rgba(5,11,24,.9);backdrop-filter:blur(12px)}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:.12em;background:linear-gradient(90deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .logo span{font-weight:400;font-size:.65rem;display:block;letter-spacing:.2em;-webkit-text-fill-color:var(--muted);color:var(--muted)}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .badge{padding:3px 8px;border-radius:20px;font-size:.6rem;font-weight:600;border:1px solid var(--border);background:rgba(10,132,255,.08);color:var(--accent);letter-spacing:.05em}
+  main{position:relative;z-index:5;max-width:460px;margin:0 auto;padding:20px 16px 120px}
+  .hero{text-align:center;padding:24px 0 20px}
+  .hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;background:linear-gradient(135deg,#e8f1ff 30%,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.15}
+  .hero p{color:var(--muted);font-size:.85rem;margin-top:6px}
+  .pay-box{background:linear-gradient(135deg,rgba(10,132,255,.1),rgba(0,212,255,.05));border:1px solid rgba(10,132,255,.28);border-radius:16px;padding:18px;margin-bottom:20px}
+  .pay-box-title{font-size:.65rem;font-weight:700;letter-spacing:.15em;color:var(--cyan);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .pay-box-title::after{content:'';flex:1;height:1px;background:var(--border)}
+  .pay-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+  .pay-row:last-child{border:none}
+  .pay-label{color:var(--muted);font-size:.8rem}
+  .pay-val{font-weight:600;font-size:.85rem}
+  .pay-val.total{color:var(--accent);font-family:'Syne',sans-serif;font-size:.95rem}
+  .pay-val.num{color:var(--blue);letter-spacing:.05em}
+  .alert{margin-top:12px;background:rgba(10,132,255,.08);border:1px solid rgba(10,132,255,.22);border-radius:10px;padding:11px 14px;font-size:.8rem;line-height:1.55;display:flex;gap:8px}
+  .form-card{background:var(--glass);border:1px solid var(--border);border-radius:18px;padding:22px;backdrop-filter:blur(16px);margin-bottom:16px}
+  .form-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+  .step-dot{width:26px;height:26px;border-radius:50%;background:var(--blue-grad);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:.7rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:7px}
+  .field input{width:100%;background:rgba(10,132,255,.06);border:1px solid var(--border);border-radius:11px;padding:13px 15px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:all .2s}
+  .field input:focus{border-color:var(--blue);background:rgba(10,132,255,.1);box-shadow:0 0 0 3px rgba(10,132,255,.1)}
+  .field input::placeholder{color:rgba(122,147,181,.45)}
+  .upload-zone{border:2px dashed rgba(10,132,255,.28);border-radius:11px;padding:24px 14px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:rgba(10,132,255,.04)}
+  .upload-zone:hover{border-color:var(--blue);background:rgba(10,132,255,.09)}
+  .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .upload-icon{font-size:1.8rem;margin-bottom:6px;display:block}
+  .upload-text{color:var(--muted);font-size:.78rem;line-height:1.5}
+  .upload-text strong{color:var(--blue)}
+  .upload-preview{display:none;margin-top:10px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+  .upload-preview img{width:100%;max-height:130px;object-fit:cover;display:block}
+  .upload-name{display:none;margin-top:6px;font-size:.75rem;color:var(--accent);font-weight:600}
+  .divider{height:1px;background:var(--border);margin:16px 0}
+  .btn-generate{width:100%;padding:15px;background:var(--blue-grad);border:none;border-radius:13px;color:#fff;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.07em;cursor:pointer;transition:all .25s;box-shadow:0 8px 28px rgba(10,132,255,.35)}
+  .btn-generate:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(10,132,255,.5)}
+  .btn-generate:disabled{opacity:.6;cursor:not-allowed;transform:none}
+  .overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(5,11,24,.97);backdrop-filter:blur(20px);align-items:center;justify-content:center;flex-direction:column}
+  .overlay.active{display:flex}
+  .verify-box{text-align:center;padding:36px 28px;max-width:300px;width:100%}
+  .spinner-wrap{position:relative;width:80px;height:80px;margin:0 auto 24px}
+  .spinner-ring{position:absolute;inset:0;border-radius:50%;border:3px solid transparent}
+  .spinner-ring:nth-child(1){border-top-color:var(--blue);animation:spin 1s linear infinite}
+  .spinner-ring:nth-child(2){border-right-color:var(--cyan);inset:8px;animation:spin .7s linear infinite reverse}
+  .spinner-ring:nth-child(3){border-bottom-color:var(--accent);inset:16px;animation:spin 1.3s linear infinite}
+  .spinner-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .verify-steps{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+  .verify-step{font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border-radius:20px;background:rgba(10,132,255,.08);border:1px solid rgba(10,132,255,.18);color:var(--muted);transition:all .3s;opacity:.4}
+  .verify-step.active{opacity:1;color:var(--accent);border-color:var(--accent);background:rgba(100,255,218,.08)}
+  .verify-step.done{opacity:.4}
+  .card-section{display:none}
+  .card-section.show{display:block}
+  .waiting-section{display:none}
+  .waiting-section.show{display:block}
+  .waiting-card{background:var(--glass);border:1px solid rgba(255,200,0,.2);border-radius:18px;padding:28px 22px;text-align:center;backdrop-filter:blur(16px);margin-bottom:16px}
+  .waiting-icon{font-size:2.8rem;margin-bottom:14px;animation:bounce 1.5s infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .waiting-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#ffd700;margin-bottom:8px}
+  .waiting-text{color:var(--muted);font-size:.82rem;line-height:1.6;margin-bottom:20px}
+  .waiting-text strong{color:var(--text)}
+  .code-input-wrap label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+  .code-input{width:100%;background:rgba(100,255,218,.06);border:2px solid rgba(100,255,218,.25);border-radius:11px;padding:14px 16px;color:var(--accent);font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.2em;text-align:center;outline:none;transition:all .2s;text-transform:uppercase}
+  .code-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(100,255,218,.1)}
+  .code-input::placeholder{color:rgba(100,255,218,.25);letter-spacing:.1em;font-size:.85rem}
+  .btn-activate{width:100%;padding:14px;margin-top:12px;background:linear-gradient(135deg,#00b894,#00d4ff);border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.07em;cursor:pointer;transition:all .2s;box-shadow:0 6px 24px rgba(0,212,255,.3)}
+  .btn-activate:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,212,255,.45)}
+  .success-banner{background:rgba(100,255,218,.07);border:1px solid rgba(100,255,218,.18);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .success-banner p{font-size:.8rem;line-height:1.5}
+  .success-banner p strong{color:var(--accent);display:block;margin-bottom:2px;font-size:.85rem}
+  .section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;text-align:center;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:10px}
+  .dot-accent{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .virtual-card{position:relative;border-radius:18px;padding:24px 22px 20px;background:linear-gradient(135deg,#0d1a2e 0%,#0a1628 40%,#051020 100%);border:1px solid rgba(10,132,255,.2);box-shadow:var(--glow),0 20px 50px rgba(0,0,0,.5);overflow:hidden;margin-bottom:16px;animation:cardReveal .6s cubic-bezier(.34,1.56,.64,1) forwards}
+  @keyframes cardReveal{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .virtual-card::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(10,132,255,.16),transparent 70%)}
+  .card-line{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);opacity:.55}
+  .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;position:relative;z-index:1}
+  .card-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:.15em;background:linear-gradient(90deg,#fff,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .card-type{font-size:.6rem;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;margin-top:3px}
+  .card-chip{width:38px;height:28px;background:linear-gradient(135deg,#d4a843,#f0c85a,#a8832a);border-radius:5px;position:relative;overflow:hidden}
+  .card-chip::before{content:'';position:absolute;inset:3px;border:1px solid rgba(0,0,0,.2);border-radius:3px}
+  .card-number{font-family:'Syne',sans-serif;font-size:1rem;font-weight:600;letter-spacing:.2em;color:rgba(255,255,255,.88);margin-bottom:16px;position:relative;z-index:1}
+  .card-footer{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:1}
+  .card-field label{font-size:.52rem;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.32);text-transform:uppercase;display:block;margin-bottom:3px}
+  .card-field .val{font-family:'Syne',sans-serif;font-size:.84rem;font-weight:600;color:rgba(255,255,255,.88)}
+  .card-field .val.name{text-transform:uppercase;font-size:.78rem;letter-spacing:.09em}
+  .card-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+  .btn-action{padding:11px;border-radius:11px;border:1px solid var(--border);background:rgba(10,132,255,.07);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+  .btn-action:hover{border-color:var(--blue);background:rgba(10,132,255,.14)}
+  .btn-action.primary{background:var(--blue-grad);border-color:transparent;box-shadow:0 4px 18px rgba(10,132,255,.3);color:#fff}
+  .btn-new{width:100%;padding:13px;border-radius:13px;background:rgba(10,132,255,.08);border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+  .btn-new:hover{border-color:var(--blue);color:var(--text)}
+  .chatbot-btn{position:fixed;bottom:80px;right:16px;z-index:50;width:52px;height:52px;border-radius:50%;background:var(--blue-grad);border:none;cursor:pointer;box-shadow:0 4px 18px rgba(10,132,255,.4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 4px 18px rgba(10,132,255,.4)}50%{box-shadow:0 4px 28px rgba(10,132,255,.7)}}
+  .chatbot-panel{display:none;position:fixed;bottom:142px;right:12px;width:calc(100vw - 24px);max-width:320px;z-index:60;background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5),var(--glow)}
+  .chatbot-panel.open{display:flex;flex-direction:column;animation:panelIn .3s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes panelIn{from{opacity:0;transform:scale(.85) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .chat-header{padding:14px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .chat-header-info{display:flex;align-items:center;gap:10px}
+  .chat-avatar{width:34px;height:34px;border-radius:50%;background:var(--blue-grad);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+  .chat-name{font-weight:600;font-size:.85rem}
+  .chat-status{font-size:.65rem;color:var(--accent);display:flex;align-items:center;gap:4px}
+  .online-dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .chat-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem}
+  .chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;max-height:220px;min-height:160px}
+  .msg{max-width:85%;padding:9px 13px;font-size:.8rem;line-height:1.5}
+  .msg.bot{background:rgba(10,132,255,.1);border:1px solid rgba(10,132,255,.18);border-radius:13px 13px 13px 4px}
+  .msg.user{align-self:flex-end;background:var(--blue-grad);border-radius:13px 13px 4px 13px;color:#fff}
+  .chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface2)}
+  .chat-input{flex:1;background:rgba(10,132,255,.07);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none}
+  .chat-input:focus{border-color:var(--blue)}
+  .chat-send{width:36px;height:36px;border-radius:9px;background:var(--blue-grad);border:none;cursor:pointer;color:#fff;font-size:.95rem;flex-shrink:0}
+  .wa-btn{position:fixed;bottom:16px;right:16px;z-index:50;display:flex;align-items:center;gap:8px;background:#25d366;color:#fff;padding:11px 16px;border-radius:28px;text-decoration:none;font-weight:600;font-size:.82rem;box-shadow:0 4px 18px rgba(37,211,102,.35);transition:all .2s}
+  .wa-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,211,102,.5)}
+  .toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-16px);background:rgba(100,255,218,.12);border:1px solid rgba(100,255,218,.28);color:var(--accent);padding:10px 22px;border-radius:28px;font-size:.8rem;font-weight:600;letter-spacing:.06em;opacity:0;transition:all .3s;pointer-events:none;z-index:200;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.error{background:rgba(255,80,80,.12);border-color:rgba(255,80,80,.28);color:#ff6b6b}
+  ::-webkit-scrollbar{width:3px}
+  ::-webkit-scrollbar-thumb{background:rgba(10,132,255,.25);border-radius:2px}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
 <header>
-  <div class="logo">
-    Peye<span>M</span>
-    <small>Virtual Card & Digital Services · Haiti 🇭🇹</small>
+  <div><div class="logo">PEYEM<span>VIRTUAL CARD</span></div></div>
+  <div class="badges">
+    <div class="badge">🔒 Sécurisé</div>
+    <div class="badge">✅ Vérifié</div>
+    <div class="badge">🛡 Protégé</div>
   </div>
-  <nav>
-    <a onclick="showPage('home')" class="active" id="nav-home">Akèy</a>
-    <a onclick="showPage('services')" id="nav-services">Sèvis</a>
-    <a onclick="showPage('virtual-card')" id="nav-virtual-card">Kat Vityèl</a>
-    <a onclick="showPage('payment')" id="nav-payment">Peman</a>
-    <a onclick="showPage('dashboard')" id="nav-dashboard">Dashboard</a>
-  </nav>
-  <div class="header-btns">
-    <button class="btn-ghost" onclick="openModal('login')">Konekte</button>
-    <button class="btn-primary" onclick="openModal('register')">Kreye Kont</button>
-  </div>
-  <button class="hamburger" onclick="toggleMobileNav()">
-    <span></span><span></span><span></span>
-  </button>
 </header>
-
-<!-- MOBILE NAV -->
-<div class="mobile-nav" id="mobileNav">
-  <a onclick="showPage('home');closeMobileNav()">🏠 Akèy</a>
-  <a onclick="showPage('services');closeMobileNav()">🛒 Sèvis</a>
-  <a onclick="showPage('virtual-card');closeMobileNav()">💳 Kat Vityèl</a>
-  <a onclick="showPage('payment');closeMobileNav()">💰 Peman</a>
-  <a onclick="showPage('dashboard');closeMobileNav()">📊 Dashboard</a>
-</div>
-
-<!-- HOME -->
-<section id="home" class="page active" style="display:flex">
-  <div class="hero-badge">
-    <div class="badge-dot"></div>
-    Platfòm #1 Kat Vityèl Ayiti
+<main>
+  <div class="hero">
+    <h1>Carte Virtuelle<br/>Instantanée</h1>
+    <p>Payez en ligne avec votre carte PEYEM</p>
   </div>
 
-  <h1 class="hero-title">
-    Achte Anliy<br>
-    <span class="grad">San Limit</span>
-  </h1>
-
-  <p class="hero-sub">
-    Kat vityèl Visa/Mastercard pou Netflix, Amazon, Spotify ak plis — akselab dirèkteman depi Ayiti via MonCash ak Natcash.
-  </p>
-
-  <div class="hero-actions">
-    <button class="btn-lg btn-lg-primary" onclick="showPage('virtual-card')">💳 Jwenn Kat Ou Kounye a</button>
-    <button class="btn-lg btn-lg-outline" onclick="showPage('services')">🛒 Wè Tout Sèvis</button>
-  </div>
-
-  <div class="demo-card-wrap">
-    <div class="demo-card">
-      <div class="card-chip"></div>
-      <div class="card-number">4532 •••• •••• 7891</div>
-      <div class="card-bottom">
-        <div>
-          <div class="card-holder">Titilè Kat</div>
-          <div class="card-name">JEAN PIERRE</div>
-        </div>
-        <div class="card-expiry">
-          <div class="expiry-label" style="font-size:0.55rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em">Ekspire</div>
-          <div class="card-expiry-val">12/27</div>
-        </div>
-      </div>
-      <div class="card-network">PeyeM</div>
+  <div class="pay-box">
+    <div class="pay-box-title">💳 Enfòmasyon Peman</div>
+    <div class="pay-row"><span class="pay-label">Sèvis</span><span class="pay-val">1 200 GDS</span></div>
+    <div class="pay-row"><span class="pay-label">Frè sèvis</span><span class="pay-val">100 GDS</span></div>
+    <div class="pay-row"><span class="pay-label">Total</span><span class="pay-val total">1 300 GDS</span></div>
+    <div class="pay-row"><span class="pay-label">MonCash</span><span class="pay-val num">509 4926 0222</span></div>
+    <div class="alert">
+      <span>📲</span>
+      <span><strong>Pou jwenn kat PEYEM:</strong> Peye <strong>1300 GDS</strong> sou MonCash <strong>50949260222</strong>, apre sa upload prèv peman anba.</span>
     </div>
   </div>
 
-  <div class="stats-row">
-    <div class="stat-item">
-      <div class="stat-val">500+</div>
-      <div class="stat-lbl">Kliyan Aktif</div>
+  <!-- FORM -->
+  <div class="form-card" id="formSection">
+    <div class="form-title"><div class="step-dot">1</div>Ranpli Enfòmasyon Ou</div>
+    <div class="field">
+      <label>Non Konplè / Nom Complet</label>
+      <input type="text" id="userName" placeholder="Jean Pierre Dupont"/>
     </div>
-    <div class="stat-item">
-      <div class="stat-val">15+</div>
-      <div class="stat-lbl">Sèvis Disponib</div>
+    <div class="field">
+      <label>Nimewo Telefòn / Téléphone</label>
+      <input type="tel" id="userPhone" placeholder="509 XX XX XXXX"/>
     </div>
-    <div class="stat-item">
-      <div class="stat-val">99%</div>
-      <div class="stat-lbl">Satisfaksyon</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-val">24/7</div>
-      <div class="stat-lbl">Sipò Kliyan</div>
-    </div>
-  </div>
-</section>
-
-<!-- SERVICES -->
-<section id="services" class="page" style="display:none">
-  <div class="sec-wrap">
-    <p class="sec-tag">// Katalòg Sèvis</p>
-    <h2 class="sec-title">Tout <span>Sèvis</span> yo</h2>
-    <p class="sec-desc">Achte abònman ak sèvis dijital pou pri ki aksesib pou Ayiti — peye via MonCash ak Natcash.</p>
-
-    <div class="services-grid">
-      <div class="service-card" onclick="goToCard('Netflix','$15.99','1,800 HTG')">
-        <div class="svc-badge">POPULÈ</div>
-        <div class="svc-icon">🎬</div>
-        <div class="svc-name">Netflix</div>
-        <div class="svc-desc">Aksè konplè Netflix — fim, seri, dokimantè. Profil pèsonèl ou.</div>
-        <div class="svc-price">Depi 1,800 HTG/mwa</div>
-      </div>
-      <div class="service-card" onclick="goToCard('Spotify','$9.99','1,200 HTG')">
-        <div class="svc-icon">🎵</div>
-        <div class="svc-name">Spotify Premium</div>
-        <div class="svc-desc">Mizik san reklam, download offline, kalite son wo.</div>
-        <div class="svc-price">Depi 1,200 HTG/mwa</div>
-      </div>
-      <div class="service-card" onclick="goToCard('Amazon Prime','$14.99','1,700 HTG')">
-        <div class="svc-icon">📦</div>
-        <div class="svc-name">Amazon Prime</div>
-        <div class="svc-desc">Amazon Video + avantaj Prime. Film ak seri eksklizif.</div>
-        <div class="svc-price">Depi 1,700 HTG/mwa</div>
-      </div>
-      <div class="service-card" onclick="goToCard('Disney+','$10.99','1,300 HTG')">
-        <div class="svc-icon">🏰</div>
-        <div class="svc-name">Disney+</div>
-        <div class="svc-desc">Marvel, Star Wars, Disney, Pixar — tout koleksyon an.</div>
-        <div class="svc-price">Depi 1,300 HTG/mwa</div>
-      </div>
-      <div class="service-card" onclick="goToCard('Canva Pro','$12.99','1,500 HTG')">
-        <div class="svc-icon">🎨</div>
-        <div class="svc-name">Canva Pro</div>
-        <div class="svc-desc">Design pwofesyonèl — templates, photos, brand kit konplè.</div>
-        <div class="svc-price">Depi 1,500 HTG/mwa</div>
-      </div>
-      <div class="service-card" onclick="goToCard('ChatGPT Plus','$20','2,300 HTG')">
-        <div class="svc-badge">HOT</div>
-        <div class="svc-icon">🤖</div>
-        <div class="svc-name">ChatGPT Plus</div>
-        <div class="svc-desc">Aksè GPT-4, plis rapid, pa gen limit. Pou travay & kreyativite.</div>
-        <div class="svc-price">Depi 2,300 HTG/mwa</div>
-      </div>
-      <div class="service-card" onclick="showPage('virtual-card')">
-        <div class="svc-badge">NOUVO</div>
-        <div class="svc-icon">💳</div>
-        <div class="svc-name">Kat Vityèl</div>
-        <div class="svc-desc">Kat Visa/Mastercard pou achte nenpòt kote anliy — Amazon, eBay, etc.</div>
-        <div class="svc-price">Depi $10 — 1,200 HTG</div>
-      </div>
-      <div class="service-card" onclick="goToCard('YouTube Premium','$13.99','1,600 HTG')">
-        <div class="svc-icon">▶️</div>
-        <div class="svc-name">YouTube Premium</div>
-        <div class="svc-desc">YouTube san reklam + YouTube Music. Download video offline.</div>
-        <div class="svc-price">Depi 1,600 HTG/mwa</div>
+    <div class="field">
+      <label>Prèv Peman – Screenshot MonCash</label>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="proofFile" accept="image/*"/>
+        <span class="upload-icon">📸</span>
+        <div class="upload-text"><strong>Klike oswa glise</strong> screenshot MonCash ou<br/>JPG · PNG · Max 5MB</div>
+        <div class="upload-preview" id="uploadPreview"><img id="previewImg" src="" alt=""/></div>
+        <div class="upload-name" id="uploadName"></div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- VIRTUAL CARD -->
-<section id="virtual-card" class="page" style="display:none">
-  <div class="sec-wrap">
-    <p class="sec-tag">// Kat Vityèl</p>
-    <h2 class="sec-title">Jenere <span>Kat Ou</span></h2>
-    <p class="sec-desc">Kat Visa oswa Mastercard vityèl pou achte anliy nenpòt kote nan mond lan.</p>
-
-    <div class="card-generator">
-      <div class="card-form-section">
-        <div class="form-title">💳 Konfigire Kat Ou</div>
-
-        <div class="form-group">
-          <label class="form-label">Non sou Kat la</label>
-          <input class="form-input" id="card-name-inp" type="text" placeholder="EX: JEAN PIERRE" oninput="updateCard()" maxlength="20">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Tip Kat</label>
-          <select class="form-select" id="card-type-sel" onchange="updateCardStyle()">
-            <option value="visa">PeyeM Blue</option>
-            <option value="mastercard">PeyeM Gold</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Montan Kat (USD)</label>
-          <div class="amount-grid">
-            <button class="amount-btn active" onclick="selectAmount(this,'$10','1,200 HTG')">$10</button>
-            <button class="amount-btn" onclick="selectAmount(this,'$25','2,900 HTG')">$25</button>
-            <button class="amount-btn" onclick="selectAmount(this,'$50','5,700 HTG')">$50</button>
-            <button class="amount-btn" onclick="selectAmount(this,'$100','11,200 HTG')">$100</button>
-            <button class="amount-btn" onclick="selectAmount(this,'$200','22,000 HTG')">$200</button>
-            <button class="amount-btn" onclick="selectAmount(this,'$500','55,000 HTG')">$500</button>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Metòd Peman</label>
-          <select class="form-select" id="pay-method">
-            <option>MonCash</option>
-            <option>Natcash</option>
-            <option>Virement Bancaire</option>
-          </select>
-        </div>
-
-        <button class="generate-btn" onclick="generateCard()">⚡ Jenere Kat Mwen — <span id="gen-price">1,200 HTG</span></button>
-      </div>
-
-      <div class="card-preview-section">
-        <div class="live-card visa-style" id="liveCard">
-          <div class="live-card-chip"></div>
-          <div class="live-card-num" id="lc-num">4532 •••• •••• ••••</div>
-          <div class="live-card-bot">
-            <div>
-              <div class="live-card-holder-lbl">Titilè Kat</div>
-              <div class="live-card-name" id="lc-name">NON OU</div>
-            </div>
-            <div>
-              <div class="live-card-exp-lbl">Ekspire</div>
-              <div class="live-card-exp" id="lc-exp">••/••</div>
-            </div>
-          </div>
-          <div class="live-card-network" id="lc-network">PeyeM</div>
-        </div>
-
-        <div class="card-details-box" id="cardDetailsBox" style="display:none">
-          <div class="card-detail-row">
-            <span class="cd-label">Nimewo</span>
-            <span class="cd-value" id="cd-num">—</span>
-          </div>
-          <div class="card-detail-row">
-            <span class="cd-label">Ekspire</span>
-            <span class="cd-value" id="cd-exp">—</span>
-          </div>
-          <div class="card-detail-row">
-            <span class="cd-label">CVV</span>
-            <span class="cd-value" id="cd-cvv">—</span>
-          </div>
-          <div class="card-detail-row">
-            <span class="cd-label">Balans</span>
-            <span class="cd-value" id="cd-bal">—</span>
-          </div>
-          <div class="card-detail-row">
-            <span class="cd-label">Statut</span>
-            <span class="cd-value" style="color:var(--green)" id="cd-status">—</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PAYMENT -->
-<section id="payment" class="page" style="display:none">
-  <div class="sec-wrap">
-    <p class="sec-tag">// Peman</p>
-    <h2 class="sec-title">Finalize <span>Acha Ou</span></h2>
-    <p class="sec-desc">Chwazi metòd peman ou — rapid, sécurisé, fasil.</p>
-
-    <div class="payment-methods">
-      <div class="pm-card selected" onclick="selectPM(this)">
-        <div class="pm-icon">📱</div>
-        <div>
-          <div class="pm-name">MonCash</div>
-          <div class="pm-desc">Digicel — Peman enstantane</div>
-        </div>
-        <div class="pm-check"></div>
-      </div>
-      <div class="pm-card" onclick="selectPM(this)">
-        <div class="pm-icon">💚</div>
-        <div>
-          <div class="pm-name">Natcash</div>
-          <div class="pm-desc">Natcom — Rapid & fiab</div>
-        </div>
-        <div class="pm-check"></div>
-      </div>
-      <div class="pm-card" onclick="selectPM(this)">
-        <div class="pm-icon">🏦</div>
-        <div>
-          <div class="pm-name">Virement</div>
-          <div class="pm-desc">Transfert bancaire Haiti</div>
-        </div>
-        <div class="pm-check"></div>
-      </div>
-      <div class="pm-card" onclick="selectPM(this)">
-        <div class="pm-icon">💵</div>
-        <div>
-          <div class="pm-name">Cash Livrezon</div>
-          <div class="pm-desc">Peye à la livraison (PaP)</div>
-        </div>
-        <div class="pm-check"></div>
-      </div>
-    </div>
-
-    <div class="checkout-box">
-      <div class="checkout-title">📋 Rézimé Kòmand</div>
-      <div class="checkout-row">
-        <span id="co-service">Kat Vityèl Visa $10</span>
-        <span id="co-price">1,200 HTG</span>
-      </div>
-      <div class="checkout-row">
-        <span>Frè sèvis</span>
-        <span>100 HTG</span>
-      </div>
-      <div class="checkout-row">
-        <span>Livrezon aksè</span>
-        <span style="color:var(--green)">Gratis ⚡</span>
-      </div>
-      <div class="checkout-row total">
-        <span>Total</span>
-        <span id="co-total">1,300 HTG</span>
-      </div>
-      <button class="checkout-btn" onclick="processPayment()">💰 Peye Kounye a</button>
-    </div>
-  </div>
-</section>
-
-<!-- DASHBOARD -->
-<section id="dashboard" class="page" style="display:none">
-  <div class="sec-wrap">
-    <p class="sec-tag">// Dashboard Admin</p>
-    <h2 class="sec-title">Tableau de <span>Bord</span></h2>
-    <p class="sec-desc">Suiv tout vant, tranzaksyon ak kliyan yo an tan rèl.</p>
-
-    <div class="dash-stats">
-      <div class="dash-stat">
-        <div class="dash-stat-val">847K</div>
-        <div class="dash-stat-lbl">Revni Total HTG</div>
-        <div class="dash-stat-trend">↑ +12% mwa sa</div>
-      </div>
-      <div class="dash-stat">
-        <div class="dash-stat-val">523</div>
-        <div class="dash-stat-lbl">Kliyan Aktif</div>
-        <div class="dash-stat-trend">↑ +34 semèn sa</div>
-      </div>
-      <div class="dash-stat">
-        <div class="dash-stat-val">1,204</div>
-        <div class="dash-stat-lbl">Tranzaksyon</div>
-        <div class="dash-stat-trend">↑ +89 mwa sa</div>
-      </div>
-      <div class="dash-stat">
-        <div class="dash-stat-val">47</div>
-        <div class="dash-stat-lbl">Kat Aktif</div>
-        <div class="dash-stat-trend">↑ +8 semèn sa</div>
-      </div>
-      <div class="dash-stat">
-        <div class="dash-stat-val">98%</div>
-        <div class="dash-stat-lbl">Satisfaksyon</div>
-        <div class="dash-stat-trend">↑ Estab</div>
-      </div>
-    </div>
-
-    <div class="transactions">
-      <div class="tx-header">🔄 Dènye Tranzaksyon yo</div>
-      <div class="tx-row">
-        <div class="tx-icon blue">🎬</div>
-        <div class="tx-info">
-          <div class="tx-name">Netflix Premium — Jean M.</div>
-          <div class="tx-date">2026-03-15 · 11:32</div>
-        </div>
-        <div class="tx-amount positive">+1,800 HTG</div>
-      </div>
-      <div class="tx-row">
-        <div class="tx-icon green">💳</div>
-        <div class="tx-info">
-          <div class="tx-name">Kat Vityèl $25 — Marie P.</div>
-          <div class="tx-date">2026-03-15 · 10:58</div>
-        </div>
-        <div class="tx-amount positive">+2,900 HTG</div>
-      </div>
-      <div class="tx-row">
-        <div class="tx-icon gold">🎵</div>
-        <div class="tx-info">
-          <div class="tx-name">Spotify Premium — Pierre A.</div>
-          <div class="tx-date">2026-03-15 · 09:14</div>
-        </div>
-        <div class="tx-amount positive">+1,200 HTG</div>
-      </div>
-      <div class="tx-row">
-        <div class="tx-icon blue">🤖</div>
-        <div class="tx-info">
-          <div class="tx-name">ChatGPT Plus — Rose B.</div>
-          <div class="tx-date">2026-03-14 · 22:45</div>
-        </div>
-        <div class="tx-amount positive">+2,300 HTG</div>
-      </div>
-      <div class="tx-row">
-        <div class="tx-icon green">💳</div>
-        <div class="tx-info">
-          <div class="tx-name">Kat Vityèl $50 — Claude D.</div>
-          <div class="tx-date">2026-03-14 · 20:11</div>
-        </div>
-        <div class="tx-amount positive">+5,700 HTG</div>
-      </div>
-      <div class="tx-row">
-        <div class="tx-icon gold">🏰</div>
-        <div class="tx-info">
-          <div class="tx-name">Disney+ — Farah T.</div>
-          <div class="tx-date">2026-03-14 · 18:33</div>
-        </div>
-        <div class="tx-amount positive">+1,300 HTG</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CHAT TOGGLE -->
-<button id="chat-toggle" onclick="toggleChat()">💬</button>
-
-<!-- CHAT WINDOW -->
-<div id="chat-win">
-  <div class="chat-head">
-    <div class="chat-head-info">
-      <div class="chat-avatar">💳</div>
-      <div>
-        <div class="chat-bot-name">PeyeM Support</div>
-        <div class="chat-bot-status">Disponib 24/7</div>
-      </div>
-    </div>
-    <button class="chat-x" onclick="toggleChat()">✕</button>
+    <div class="divider"></div>
+    <button class="btn-generate" id="submitBtn" onclick="handleSubmit()">⚡ Soumèt Demand Lan</button>
   </div>
 
-  <div class="chat-msgs" id="chatMsgs"></div>
+  <!-- WAITING -->
+  <div class="waiting-section" id="waitingSection">
+    <div class="waiting-card">
+      <div class="waiting-icon">⏳</div>
+      <div class="waiting-title">Demand Ou Voye!</div>
+      <div class="waiting-text">
+        Admin ap verifye peman ou sou <strong>SMS MonCash</strong>.<br/>
+        Apre verifkasyon, ou ap resevwa yon <strong>kòd aktivasyon</strong> sou WhatsApp ou.<br/><br/>
+        Antre kòd la anba pou jenere kat ou otomatikman.
+      </div>
+      <div class="code-input-wrap">
+        <label>🔑 Antre Kòd Aktivasyon (WhatsApp)</label>
+        <input type="text" class="code-input" id="approvalCode" placeholder="PEYEM-XXXXX" maxlength="12"/>
+        <button class="btn-activate" onclick="activateCard()">✅ Aktive Kat Mwen</button>
+      </div>
+    </div>
+    <button class="btn-new" onclick="newRequest()">← Retounen</button>
+  </div>
 
-  <div class="chat-quick" id="chatQuick"></div>
+  <!-- CARD -->
+  <div class="card-section" id="cardSection">
+    <div class="success-banner">
+      <span style="font-size:1.3rem">✅</span>
+      <p><strong>Kat ou pare! Félicitations!</strong>Konsève enfòmasyon yo an sekirite. Pa pataje yo ak pèsonn.</p>
+    </div>
+    <div class="section-title"><div class="dot-accent"></div>Kat Vityèl Ou<div class="dot-accent"></div></div>
+    <div class="virtual-card">
+      <div class="card-line"></div>
+      <div class="card-header">
+        <div><div class="card-brand">PEYEM</div><div class="card-type">Virtual Card · Prepaid</div></div>
+        <div class="card-chip"></div>
+      </div>
+      <div class="card-number" id="cardNumber">•••• •••• •••• ••••</div>
+      <div class="card-footer">
+        <div class="card-field"><label>Titulaire</label><div class="val name" id="cardName">JEAN DUPONT</div></div>
+        <div class="card-field"><label>Expiration</label><div class="val" id="cardExpiry">MM/AA</div></div>
+        <div class="card-field"><label>CVV</label><div class="val" id="cardCvv">•••</div></div>
+      </div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-action" onclick="copyCardNum()">📋 Copier N°</button>
+      <button class="btn-action primary" onclick="saveCard()">💾 Sauvegarder</button>
+    </div>
+    <button class="btn-new" onclick="newRequest()">← Nouvelle Demande</button>
+  </div>
+</main>
 
-  <div class="chat-inp-area">
-    <input type="text" id="chat-inp" placeholder="Poze kesyon ou..." onkeydown="if(event.key==='Enter') sendChat()">
-    <button id="chat-send" onclick="sendChat()">➤</button>
+<!-- OVERLAY -->
+<div class="overlay" id="verifyOverlay">
+  <div class="verify-box">
+    <div class="spinner-wrap">
+      <div class="spinner-ring"></div><div class="spinner-ring"></div><div class="spinner-ring"></div>
+      <div class="spinner-icon">🔐</div>
+    </div>
+    <div class="verify-steps">
+      <div class="verify-step" id="s1">🔍 Verification en cours…</div>
+      <div class="verify-step" id="s2">🌐 Connexion serveur</div>
+      <div class="verify-step" id="s3">📧 Envoi notification admin</div>
+      <div class="verify-step" id="s4">✅ Demand soumèt!</div>
+    </div>
   </div>
 </div>
 
-<!-- LOGIN MODAL -->
-<div class="modal-overlay" id="modal-login">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('login')">✕</button>
-    <h3>Konekte sou <span>PeyeM</span></h3>
-    <p>Antre enfòmasyon ou pou aksede kont ou.</p>
-    <div class="form-group">
-      <label class="form-label">WhatsApp / Telefòn</label>
-      <input class="form-input" type="tel" placeholder="+509 ...">
+<!-- CHATBOT -->
+<div class="chatbot-panel" id="chatPanel">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar">🤖</div>
+      <div><div class="chat-name">Asistan PEYEM</div><div class="chat-status"><div class="online-dot"></div>Aktif kounye a</div></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Modpas</label>
-      <input class="form-input" type="password" placeholder="••••••••">
-    </div>
-    <button class="generate-btn" onclick="submitLogin()">🔐 Konekte</button>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg bot">👋 Byenvini sou PEYEM!</div>
+    <div class="msg bot">💰 Peye <strong>1300 GDS</strong> sou MonCash <strong>50949260222</strong></div>
+    <div class="msg bot">📸 Upload screenshot epi soumèt fòm nan.</div>
+    <div class="msg bot">⏳ Admin verifye epi voye <strong>kòd WhatsApp</strong> ba ou.</div>
+    <div class="msg bot">🔑 Antre kòd la — kat ou jenere otomatikman!</div>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Ekri kesyon ou…" onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="chat-send" onclick="sendChat()">➤</button>
   </div>
 </div>
-
-<!-- REGISTER MODAL -->
-<div class="modal-overlay" id="modal-register">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('register')">✕</button>
-    <h3>Kreye <span>Kont Ou</span></h3>
-    <p>Gratis — jwenn premye kat vityèl ou nan 5 minit!</p>
-    <div class="form-group">
-      <label class="form-label">Non Konplè</label>
-      <input class="form-input" type="text" placeholder="Jean Pierre...">
-    </div>
-    <div class="form-group">
-      <label class="form-label">WhatsApp</label>
-      <input class="form-input" type="tel" placeholder="+509 ...">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Modpas</label>
-      <input class="form-input" type="password" placeholder="••••••••">
-    </div>
-    <button class="generate-btn" onclick="submitRegister()">🚀 Kreye Kont Gratis</button>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="f-logo">Peye<span>M</span></div>
-  <p>© 2026 PeyeM · Kat Vityèl & Sèvis Dijital · Haiti 🇭🇹</p>
-</footer>
+<button class="chatbot-btn" onclick="toggleChat()">💬</button>
+<a class="wa-btn" href="https://wa.me/50934819125" target="_blank">📲 Contact WhatsApp</a>
+<div class="toast" id="toast"></div>
 
 <script>
-// ===== NAVIGATION =====
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => { p.style.display='none'; p.classList.remove('active'); });
-  const pg = document.getElementById(id);
-  if(pg) { pg.style.display = id==='home' ? 'flex' : 'block'; pg.classList.add('active'); }
-  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-  const nav = document.getElementById('nav-'+id);
-  if(nav) nav.classList.add('active');
+emailjs.init('TsZs4ct00qlaL0erq');
+const SVC = 'service_7izaaxa', TPL = 'template_8qt7ru5';
+let userData = {};
+
+// Upload
+const fi = document.getElementById('proofFile');
+fi.addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    document.getElementById('previewImg').src = ev.target.result;
+    document.getElementById('uploadPreview').style.display = 'block';
+    document.getElementById('uploadName').style.display = 'block';
+    document.getElementById('uploadName').textContent = '✅ ' + f.name;
+  };
+  r.readAsDataURL(f);
+});
+
+async function handleSubmit() {
+  const name = document.getElementById('userName').value.trim();
+  const phone = document.getElementById('userPhone').value.trim();
+  if (!name) { showToast('⚠️ Tanpri antre non ou', 1); return; }
+  if (!phone) { showToast('⚠️ Tanpri antre nimewo ou', 1); return; }
+  if (!fi.files[0]) { showToast('⚠️ Tanpri upload prèv peman an', 1); return; }
+  userData = { name, phone };
+  document.getElementById('submitBtn').disabled = true;
+
+  const ov = document.getElementById('verifyOverlay');
+  ov.classList.add('active');
+  const steps = ['s1','s2','s3','s4'];
+  steps.forEach(s => document.getElementById(s).className = 'verify-step');
+
+  let i = 0;
+  function next() {
+    if (i > 0) document.getElementById(steps[i-1]).classList.add('done');
+    if (i < steps.length) {
+      document.getElementById(steps[i]).classList.add('active'); i++;
+      if (i < steps.length) setTimeout(next, 1100);
+      else setTimeout(send, 1200);
+    }
+  }
+  next();
+
+  async function send() {
+    try {
+      const dt = new Date().toLocaleDateString('fr-FR') + ' ' + new Date().toLocaleTimeString('fr-FR');
+      await emailjs.send(SVC, TPL, {
+        from_name: name,
+        phone: phone,
+        title: 'Nouvelle demande PEYEM',
+        message: `NOUVELLE DEMANDE PEYEM\n\nNon Kliyan: ${name}\nTelefon: ${phone}\nDat: ${dt}\n\nVeifye SMS MonCash 50949260222\nApre verification, voye kod aktivasyon ba kliyan sou WhatsApp: ${phone}\n\nFormat kod: PEYEM-XXXXX`,
+        email: 'pierreancyto5@gmail.com',
+        reply_to: 'pierreancyto5@gmail.com'
+      });
+      ov.classList.remove('active');
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('waitingSection').classList.add('show');
+      window.scrollTo({top:0, behavior:'smooth'});
+      showToast('✅ Demand voye! Tann kòd WhatsApp ou.');
+      addBotMsg('📨 Demand ou voye! Admin ap kontakte ou sou WhatsApp apre verifkasyon.');
+    } catch(err) {
+      ov.classList.remove('active');
+      document.getElementById('submitBtn').disabled = false;
+      showToast('❌ Erè rezeau. Eseye ankò.', 1);
+    }
+  }
+}
+
+function activateCard() {
+  const code = document.getElementById('approvalCode').value.trim().toUpperCase();
+  if (!code.startsWith('PEYEM-') || code.length < 8) {
+    showToast('⚠️ Kòd pa valid. Verifye WhatsApp ou.', 1); return;
+  }
+  document.getElementById('waitingSection').classList.remove('show');
+  document.getElementById('cardSection').classList.add('show');
+  document.getElementById('cardNumber').textContent = [0,0,0,0].map(()=>Math.floor(1000+Math.random()*9000)).join(' ');
+  document.getElementById('cardName').textContent = userData.name.toUpperCase().substring(0,22);
+  const m = String(Math.floor(Math.random()*12)+1).padStart(2,'0');
+  const y = String(new Date().getFullYear()+Math.floor(Math.random()*4)+1).slice(-2);
+  document.getElementById('cardExpiry').textContent = m+'/'+y;
+  document.getElementById('cardCvv').textContent = String(Math.floor(100+Math.random()*900));
+  window.scrollTo({top:0, behavior:'smooth'});
+  showToast('🎉 Kat ou pare!');
+  addBotMsg('🎉 Kat ou jenere! Konsève enfòmasyon yo an sekirite. Pa pataje yo.');
+}
+
+function copyCardNum() {
+  navigator.clipboard.writeText(document.getElementById('cardNumber').textContent.replace(/ /g,''))
+    .then(()=>showToast('📋 Nimewo kat kopye!')).catch(()=>showToast('❌ Pa kapab kopye',1));
+}
+function saveCard() {
+  const d = `PEYEM Virtual Card\n\nNimewo: ${document.getElementById('cardNumber').textContent}\nNon: ${document.getElementById('cardName').textContent}\nExp: ${document.getElementById('cardExpiry').textContent}  CVV: ${document.getElementById('cardCvv').textContent}\n\nKonsève dokiman sa an sekirite!`;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([d],{type:'text/plain'})); a.download='peyem-card.txt'; a.click();
+  showToast('💾 Kat sove!');
+}
+function newRequest() {
+  document.getElementById('cardSection').classList.remove('show');
+  document.getElementById('waitingSection').classList.remove('show');
+  document.getElementById('formSection').style.display='block';
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('userName').value='';
+  document.getElementById('userPhone').value='';
+  fi.value='';
+  document.getElementById('uploadPreview').style.display='none';
+  document.getElementById('uploadName').style.display='none';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function toggleMobileNav() {
-  document.getElementById('mobileNav').classList.toggle('open');
-}
-function closeMobileNav() {
-  document.getElementById('mobileNav').classList.remove('open');
-}
-
-// ===== MODALS =====
-function openModal(id) { document.getElementById('modal-'+id).classList.add('open'); }
-function closeModal(id) { document.getElementById('modal-'+id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); });
-});
-
-function submitLogin() {
-  showNotif('✅ Koneksyon reyisi! Byenvini.');
-  closeModal('login');
-}
-function submitRegister() {
-  showNotif('🎉 Kont kreye! Tcheke WhatsApp ou.');
-  closeModal('register');
+function showToast(msg, err) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show'+(err?' error':'');
+  setTimeout(()=>t.className='toast', 3000);
 }
 
-// ===== NOTIFICATION =====
-function showNotif(msg, color='var(--green)') {
-  const old = document.querySelector('.notif');
-  if(old) old.remove();
-  const el = document.createElement('div');
-  el.className = 'notif';
-  el.style.borderLeftColor = color;
-  el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3100);
-}
-
-// ===== VIRTUAL CARD =====
-let selectedAmount = '$10';
-let selectedAmountHTG = '1,200 HTG';
-
-function selectAmount(btn, usd, htg) {
-  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedAmount = usd;
-  selectedAmountHTG = htg;
-  document.getElementById('gen-price').textContent = htg;
-}
-
-function updateCard() {
-  const name = document.getElementById('card-name-inp').value.toUpperCase() || 'NON OU';
-  document.getElementById('lc-name').textContent = name;
-}
-
-function updateCardStyle() {
-  const type = document.getElementById('card-type-sel').value;
-  const card = document.getElementById('liveCard');
-  const net = document.getElementById('lc-network');
-  if(type === 'visa') {
-    card.className = 'live-card visa-style';
-    net.textContent = 'PeyeM';
-    document.getElementById('lc-num').textContent = '4532 •••• •••• ••••';
-  } else {
-    card.className = 'live-card mastercard-style';
-    net.textContent = 'PeyeM';
-    document.getElementById('lc-num').textContent = '5425 •••• •••• ••••';
-  }
-}
-
-function generateCard() {
-  const name = document.getElementById('card-name-inp').value.toUpperCase();
-  if(!name) { showNotif('⚠️ Tanpri antre non ou sou kat la!', 'var(--gold)'); return; }
-
-  const type = document.getElementById('card-type-sel').value;
-  const prefix = type === 'visa' ? '4532' : '5425';
-
-  // Generate fake card number
-  const seg2 = Math.floor(1000+Math.random()*9000);
-  const seg3 = Math.floor(1000+Math.random()*9000);
-  const seg4 = Math.floor(1000+Math.random()*9000);
-  const num = `${prefix} ${seg2} ${seg3} ${seg4}`;
-
-  const month = String(Math.floor(1+Math.random()*12)).padStart(2,'0');
-  const year = String(27 + Math.floor(Math.random()*3));
-  const exp = `${month}/${year}`;
-  const cvv = String(Math.floor(100+Math.random()*900));
-
-  // Update live card
-  document.getElementById('lc-num').textContent = num.replace(/(\d{4})/g,'$1 ').trim();
-  document.getElementById('lc-exp').textContent = exp;
-  document.getElementById('lc-name').textContent = name;
-
-  // Show details
-  const box = document.getElementById('cardDetailsBox');
-  box.style.display = 'block';
-  document.getElementById('cd-num').textContent = num;
-  document.getElementById('cd-exp').textContent = exp;
-  document.getElementById('cd-cvv').textContent = cvv;
-  document.getElementById('cd-bal').textContent = selectedAmount;
-  document.getElementById('cd-status').textContent = '✅ Aktif — Prèt pou itilize';
-
-  // Update checkout
-  document.getElementById('co-service').textContent = `Kat Vityèl PeyeM ${selectedAmount}`;
-  document.getElementById('co-price').textContent = selectedAmountHTG;
-
-  showNotif('💳 Kat jenere avèk siksè! Ale nan Peman pou konfime.');
-}
-
-// ===== SERVICES =====
-function goToCard(name, usd, htg) {
-  document.getElementById('co-service').textContent = `${name} — ${usd}`;
-  document.getElementById('co-price').textContent = htg;
-  showPage('payment');
-}
-
-// ===== PAYMENT =====
-function selectPM(card) {
-  document.querySelectorAll('.pm-card').forEach(c => c.classList.remove('selected'));
-  card.classList.add('selected');
-}
-
-function processPayment() {
-  showNotif('⚡ Peman ap trete... Tcheke MonCash ou!');
-  setTimeout(() => showNotif('✅ Peman konfime! Aksè voye sou WhatsApp ou.'), 2000);
-}
-
-// ===== CHATBOT AI =====
 let chatOpen = false;
-const quickReplies = ['💳 Kat Vityèl','🎬 Netflix','🎵 Spotify','💰 Pri yo','📱 Peman MonCash'];
+function toggleChat() { chatOpen=!chatOpen; document.getElementById('chatPanel').classList.toggle('open',chatOpen); }
 
-function toggleChat() {
-  chatOpen = !chatOpen;
-  const win = document.getElementById('chat-win');
-  if(chatOpen) {
-    win.classList.add('open');
-    if(document.getElementById('chatMsgs').children.length === 0) initChat();
-  } else {
-    win.classList.remove('open');
-  }
+const replies = {
+  'peman':'Peye 1300 GDS sou MonCash 50949260222 epi upload screenshot.',
+  'moncash':'Nimewo MonCash: 50949260222. Voye 1300 GDS.',
+  'prix':'Pri = 1200 GDS + 100 GDS frè = 1300 GDS total.',
+  'kòd':'Apre admin verifye, y ap voye kòd la sou WhatsApp ou. Antre li nan "Kòd Aktivasyon".',
+  'kat':'Apre ou resevwa kòd WhatsApp, antre li epi kat ou ap jenere!',
+  'whatsapp':'Kontakte nou: wa.me/50934819125',
+  'pwoblèm':'Kontakte nou sou WhatsApp: wa.me/50934819125',
+  'default':'Ekri "peman", "kòd", "kat" oswa "whatsapp" pou m ede ou!'
+};
+function addBotMsg(txt) {
+  const m=document.getElementById('chatMessages');
+  const d=document.createElement('div'); d.className='msg bot'; d.innerHTML=txt;
+  m.appendChild(d); m.scrollTop=m.scrollHeight;
 }
-
-function initChat() {
-  addBotMsg("Alo! Mwen se asistan KartAy 💳\n\nMwen ka ede ou:\n• Jwenn yon kat vityèl Visa/Mastercard\n• Achte Netflix, Spotify, Amazon ak plis\n• Eksplike kijan peman an mache\n\nKijan mwen ka ede ou?");
-  renderQuick();
-}
-
-function renderQuick() {
-  document.getElementById('chatQuick').innerHTML = quickReplies.map(q =>
-    `<button class="cq-btn" onclick="handleQuick('${q}')">${q}</button>`
-  ).join('');
-}
-
-function addBotMsg(text) {
-  const msgs = document.getElementById('chatMsgs');
-  const time = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  const el = document.createElement('div');
-  el.className = 'cmsg bot';
-  el.innerHTML = `${text.replace(/\n/g,'<br>')}<div class="cmsg-time">${time}</div>`;
-  msgs.appendChild(el);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function addUserMsg(text) {
-  const msgs = document.getElementById('chatMsgs');
-  const time = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  const el = document.createElement('div');
-  el.className = 'cmsg user';
-  el.innerHTML = `${text}<div class="cmsg-time">${time}</div>`;
-  msgs.appendChild(el);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function showTyping() {
-  const msgs = document.getElementById('chatMsgs');
-  const el = document.createElement('div');
-  el.className = 'cmsg bot'; el.id = 'typing';
-  el.innerHTML = '<div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div>';
-  msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
-}
-
-function removeTyping() {
-  const t = document.getElementById('typing');
-  if(t) t.remove();
-}
-
-async function sendToAI(msg) {
-  const sys = `Ou se asistan PeyeM — yon platfòm ayisyen pou kat vityèl PeyeM ak sèvis dijital.
-
-Sèvis disponib: Kat Vityèl ($10-$500), Netflix (1,800 HTG/mwa), Spotify (1,200 HTG/mwa), Amazon Prime (1,700 HTG/mwa), Disney+ (1,300 HTG/mwa), ChatGPT Plus (2,300 HTG/mwa), Canva Pro (1,500 HTG/mwa).
-
-Peman aksepte: MonCash, Natcash, Virement Bancaire.
-Livrezon: Otomatik via WhatsApp apre peman konfime.
-
-Reponn an Kreyòl Ayisyen. Sois konsis, chalè, pwofesyonèl. Itilize emoji apwopriye.`;
-
-  const response = await fetch("https://cold-night-65c0.pierreancyto5.workers.dev", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({message: msg, site: "peyem"})
-  });
-  const data = await response.json();
-  return data.reply || "Désolé, yon erè. Tanpri eseye ankò.";
-}
-
-async function handleQuick(text) {
-  addUserMsg(text); showTyping();
-  try {
-    const r = await sendToAI(text);
-    removeTyping(); addBotMsg(r);
-  } catch(e) { removeTyping(); addBotMsg("Désolé, pwoblèm koneksyon. Eseye ankò."); }
-}
-
-async function sendChat() {
-  const inp = document.getElementById('chat-inp');
-  const text = inp.value.trim();
-  if(!text) return;
-  inp.value = '';
-  addUserMsg(text); showTyping();
-  try {
-    const r = await sendToAI(text);
-    removeTyping(); addBotMsg(r);
-  } catch(e) { removeTyping(); addBotMsg("Désolé, pwoblèm koneksyon. Eseye ankò."); }
+function sendChat() {
+  const inp=document.getElementById('chatInput'), txt=inp.value.trim(); if(!txt)return;
+  const m=document.getElementById('chatMessages');
+  const u=document.createElement('div'); u.className='msg user'; u.textContent=txt;
+  m.appendChild(u); inp.value=''; m.scrollTop=m.scrollHeight;
+  setTimeout(()=>{
+    const lo=txt.toLowerCase(); let rep=replies.default;
+    for(const[k,v] of Object.entries(replies)){if(lo.includes(k)){rep=v;break;}}
+    addBotMsg(rep);
+  },700);
 }
 </script>
 </body>
